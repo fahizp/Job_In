@@ -1,16 +1,26 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "baseUrl": "./",
-    "outDir": "dist",
-    "sourceMap": true,
-    "noImplicitAny": true
+    "target": "ES6",                           // Set the target JavaScript version
+    "module": "commonjs",                      // CommonJS is used for Node.js environments
+    "moduleResolution": "node",                // Resolve modules the same way Node.js does
+    "baseUrl": "./",                          // Base directory for non-relative module imports
+    "outDir": "./dist",                       // Output directory for compiled files
+    "sourceMap": true,                        // Generate source maps for debugging
+    "strict": true,                           // Enable all strict type-checking options
+    "noImplicitAny": true,                    // Raise an error for variables with 'any' type
+    "esModuleInterop": true,                  // Enable interoperability between CommonJS and ES Modules
+    "skipLibCheck": true,                     // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Ensure that file names are consistent
+    "resolveJsonModule": true,                // Allow importing JSON files
+    "isolatedModules": true,                  // Ensure each file can be safely transpiled independently
+    "jsx": "react"                            // Specify JSX code generation for React
   },
   "include": [
-    "src/**/*"
+    "src/**/*"                               // Include all files in the 'src' directory
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",                         // Exclude 'node_modules' directory
+    "**/*.test.ts",                         // Optionally exclude test files
+    "**/*.spec.ts"                          // Optionally exclude test files
   ]
 }

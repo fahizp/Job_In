@@ -1,7 +1,7 @@
 {
   "name": "job_in",
   "version": "1.0.0",
-  "description": "job_in - React Js Job Board & Job Portal Template",
+  "description": "A website for job seekers and job providers",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -14,7 +14,6 @@
     "react-icons": "^4.12.0",
     "react-modal-video": "^2.0.1",
     "react-router-dom": "^6.19.0",
-    "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
     "react-select": "^5.8.0",
     "sass": "^1.69.5",
@@ -25,13 +24,43 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,md}'"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "indent": [
+        "error",
+        2
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-unused-vars": [
+        "warn"
+      ],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".jsx",
+            ".tsx"
+          ]
+        }
+      ],
+      "react/react-in-jsx-scope": "off",
+      "jsx-a11y/anchor-is-valid": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -44,5 +73,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-recommended": "^4.1.0",
+    "eslint-define-config": "^2.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.9.0",
+    "eslint-plugin-react": "^7.35.0",
+    "globals": "^15.9.0",
+    "prettier": "^3.3.3"
   }
 }
