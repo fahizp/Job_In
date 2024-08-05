@@ -28,22 +28,36 @@
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,md}'"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && npm run format"
-    }
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ],
     "rules": {
-      "indent": ["error", 2],
-      "quotes": ["error", "single"],
-      "semi": ["error", "always"],
-      "no-unused-vars": ["warn"],
-      "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
+      "indent": [
+        "error",
+        2
+      ],
+      "quotes": [
+        "error",
+        "single"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "no-unused-vars": [
+        "warn"
+      ],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".jsx",
+            ".tsx"
+          ]
+        }
+      ],
       "react/react-in-jsx-scope": "off",
       "jsx-a11y/anchor-is-valid": "warn"
     }
@@ -61,12 +75,15 @@
     ]
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-config-recommended": "^4.1.0",
+    "eslint-define-config": "^2.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.9.0",
     "eslint-plugin-react": "^7.35.0",
-    "husky": "^9.1.4",
+    "globals": "^15.9.0",
     "prettier": "^3.3.3"
   }
 }
