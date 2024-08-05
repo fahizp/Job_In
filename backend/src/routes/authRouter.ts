@@ -5,4 +5,5 @@ const router = express.Router();
 
 router.post('/signup',userSignUp);
 
-export default router;
+const authRouter = router;
+export default authRouter;
