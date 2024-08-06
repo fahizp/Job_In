@@ -32,8 +32,9 @@ const newUser = new authModel({
 
 await newUser.save();
 
-let accesToken =  jwt.sign({userId:newUser._id},process.env.ACCESS_TOKEN)
-let refreshToken =  jwt.sign({userId:newUser._id},process.env.REFRESH_TOKEN)
+//
+let accesToken :String =  jwt.sign({userId:newUser._id},process.env.ACCESS_TOKEN)
+let refreshToken : String =  jwt.sign({userId:newUser._id},process.env.REFRESH_TOKEN)
 
 const userToken = await authModel.findOne({userId:newUser._id});
    if(userToken) await userTokenModel.deleteOne()
@@ -53,20 +54,20 @@ export const userLogin = async (req:express.Request,res:express.Response)=>{
   const {email,password}:userSignUpInterFace  = req.body;
 
   try {
-    const user =  await authModel.findOne({email})
+    const user:any =  await authModel.findOne({email})
     if(!user){
       return res.status(404).json({message:"User not found"})
     }
 
-    const verifyPassword = await bcrypt.compare(password, user.password);
+    const verifyPassword:any = await bcrypt.compare(password, user.password);
     if(!verifyPassword){
       return res.status(401).json({message:"Invalid password"})
     }
 
-    let accesToken = await jwt.sign({userId:user._id},process.env.ACCESS_TOKEN,{expiresIn:"15m"})
-    let refreshToken = await jwt.sign({userId:user._id},process.env.REFRESH_TOKEN,{expiresIn:"6d"})
+    let accesToken :String= await jwt.sign({userId:user._id},process.env.ACCESS_TOKEN,{expiresIn:"15m"})
+    let refreshToken :String= await jwt.sign({userId:user._id},process.env.REFRESH_TOKEN,{expiresIn:"6d"})
 
-    const userToken = await userTokenModel.findOne({userId:user._id});
+    const userToken :String = await userTokenModel.findOne({userId:user._id});
     if(userToken) await userTokenModel.deleteOne()
 
     await new userTokenModel({userId:user._id,token:refreshToken}).save()
@@ -75,5 +76,26 @@ export const userLogin = async (req:express.Request,res:express.Response)=>{
     
   } catch (error) {
    return  res.status(500).send("Internal server error");
+  }
+}
+
+export const refreshtoken = async (req:express.Request,res:express.Response)=>{
+  const {refreshToken } = req.body;
+
+  if(!refreshToken)  return res.status(401).send('Refresh Token Required');
+
+
+  try {
+    const {userId} = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
+
+    const tokenRecord = await userTokenModel.findOne({ userId, token: refreshToken });
+
+    if (!tokenRecord) return res.status(403).send('Invalid Refresh Token');
+
+    const newAccessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+
+    res.json({ accessToken: newAccessToken });
+  } catch (error) {
+    res.status(500).send('Internal Server Error');
   }
 }
