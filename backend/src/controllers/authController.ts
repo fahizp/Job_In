@@ -99,3 +99,20 @@ export const refreshtoken = async (req:express.Request,res:express.Response)=>{
     res.status(500).send('Internal Server Error');
   }
 }
+
+
+ export const logouting =  async(req:express.Request,res:express.Response)=>{
+  const { refreshToken } = req.body;
+  
+  if (!refreshToken) return res.status(401).send('Refresh Token Required');
+
+  try {
+    
+    await userTokenModel.deleteOne({ token: refreshToken });
+    
+    res.send('Logged out successfully');
+  } catch (error) {
+    res.status(500).send('Internal Server Error');
+  }
+
+ }
