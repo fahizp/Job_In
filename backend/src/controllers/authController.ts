@@ -1,6 +1,6 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
-import { authModel }`` from 'src/models/authModel';
+import { authModel } from 'src/models/authModel';
 
 
 interface userSignUpInterFace{
