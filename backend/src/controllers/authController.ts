@@ -150,8 +150,8 @@ export const logouting = async (
 
   try {
     await userTokenModel.deleteOne({ token: refreshToken });
-    res.send("Logged out successfully");
+    res.status(200).json({message:"Logged out successfully"});
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({message:"Internal Server Error"});
   }
 };
