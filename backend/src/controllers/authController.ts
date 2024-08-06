@@ -1,6 +1,6 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
-import { authModel } from 'src/models/authModel';
+import authModel  from '../models/authModel';
 
 
 interface userSignUpInterFace{
@@ -18,7 +18,7 @@ const emailExist  =  await authModel.findOne({email})
     console.log("email already in use");
     return res.status(409).json({messaage:"email already exist"})
  }
-
+//
  const hashedpassword =  await bcrypt.hash(password,10);
  const newUser = new authModel({
    name:name,
@@ -26,6 +26,7 @@ const emailExist  =  await authModel.findOne({email})
    password:hashedpassword
  })
 
+ console.log("checking user",newUser)
  await newUser.save();
  return res.status(201).json({message:"created sucessfully"});
 }
