@@ -31,3 +31,24 @@ const emailExist  =  await authModel.findOne({email})
  return res.status(201).json({message:"created sucessfully"});
 }
 
+
+export const userLogin = async (req:express.Request,res:express.Response)=>{
+  const {email,password}:userSignUpInterFace  = req.body;
+
+  try {
+    const user =  await authModel.findOne({email})
+    if(!user){
+      return res.status(404).json({message:"User not found"})
+    }
+
+    const verifyPassword = await bcrypt.compare(password, user.password);
+    if(!verifyPassword){
+      return res.status(401).json({message:"Invalid password"})
+    }
+
+    return res.status(201).json({message:"User login sucessfully"});
+    
+  } catch (error) {
+   return  res.status(500).send("Internal server error");
+  }
+}
