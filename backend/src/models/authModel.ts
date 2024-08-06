@@ -14,8 +14,12 @@ const signUpSchema = new mongoose.Schema({
     type:String,
     required:true,
   }
+},{
+  timestamps:true
 });
 
-export const authModel = mongoose.model("signUp",signUpSchema);
+const authModel = mongoose.model("signUp",signUpSchema);
+
+export default authModel;
 
 
