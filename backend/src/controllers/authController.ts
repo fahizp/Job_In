@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import authModel from "../models/authModel";
 import userTokenModel from "../models/userToken";
 
@@ -8,6 +8,10 @@ interface userSignUpInterFace {
   name: string;
   email: string;
   password: string;
+}
+
+interface JwtPayload {
+  userid: string;
 }
 
 export const userSignUp = async (
@@ -34,14 +38,18 @@ export const userSignUp = async (
 
     await newUser.save();
 
-    //
-    let accesToken: String = jwt.sign(
-      { userId: newUser._id },
-      process.env.ACCESS_TOKEN
+    //generating access token and refresh tokem
+    let accesToken: string = jwt.sign(
+      { userid:newUser._id },
+      process.env.ACCESS_TOKEN,{
+        expiresIn:process.env.ACCESS_KEY_EXPIRY
+      }
     );
-    let refreshToken: String = jwt.sign(
-      { userId: newUser._id },
-      process.env.REFRESH_TOKEN
+    let refreshToken: string = jwt.sign(
+      { userid:newUser._id },
+      process.env.REFRESH_TOKEN,{
+        expiresIn:process.env.REFRESH_KEY_EXPIRY
+      }
     );
 
     const userToken = await authModel.findOne({ userId: newUser._id });
@@ -51,13 +59,11 @@ export const userSignUp = async (
       userId: newUser._id,
       token: refreshToken,
     }).save();
-    return res
-      .status(201)
-      .json({
-        message: "created sucessfully",
-        ACCESS_TOKEN: accesToken,
-        REFRESH_TOKEN: refreshToken,
-      });
+    return res.status(201).json({
+      message: "created sucessfully",
+      ACCESS_TOKEN: accesToken,
+      REFRESH_TOKEN: refreshToken,
+    });
   } catch (error) {
     return res.status(500).send("Internal server error");
   }
@@ -82,13 +88,13 @@ export const userLogin = async (
 
     let accesToken: String = await jwt.sign(
       { userId: user._id },
-      process.env.ACCESS_TOKEN,
-      { expiresIn: "15m" }
+      process.env.ACCESS_TOKEN as string,
+      { expiresIn: process.env.ACCESS_KEY_EXPIRY }
     );
     let refreshToken: String = await jwt.sign(
       { userId: user._id },
-      process.env.REFRESH_TOKEN,
-      { expiresIn: "6d" }
+      process.env.REFRESH_TOKEN as string,
+      { expiresIn:process.env.REFRESH_KEY_EXPIRY }
     );
 
     const userToken: String = await userTokenModel.findOne({
@@ -98,60 +104,58 @@ export const userLogin = async (
 
     await new userTokenModel({ userId: user._id, token: refreshToken }).save();
 
-    return res
-      .status(201)
-      .json({
-        message: "User login sucessfully",
-        ACCESS_TOKEN: accesToken,
-        REFRESH_TOKEN: refreshToken,
-      });
+    return res.status(201).json({
+      message: "User login sucessfully",
+      ACCESS_TOKEN: accesToken,
+      REFRESH_TOKEN: refreshToken,
+    });
   } catch (error) {
     return res.status(500).send("Internal server error");
   }
 };
 
-export const refreshtoken = async (
+export const logout = async (
   req: express.Request,
   res: express.Response
 ) => {
-  const { refreshToken } = req.body;
+  const { refresh_token } = req.body;
 
-  if (!refreshToken) return res.status(401).send("Refresh Token Required");
-
+  if (!refresh_token) return res.status(401).send("Refresh Token Required");
   try {
-    const { userId } = jwt.verify(refreshToken, process.env.REFRESH_TOKEN);
-
-    const tokenRecord = await userTokenModel.findOne({
-      userId,
-      token: refreshToken,
-    });
-
-    if (!tokenRecord) return res.status(403).send("Invalid Refresh Token");
-
-    const newAccessToken = jwt.sign(
-      { userId },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    res.json({ accessToken: newAccessToken });
+    await userTokenModel.deleteOne({ token: refresh_token });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const logouting = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  const { refreshToken } = req.body;
 
-  if (!refreshToken) return res.status(401).send("Refresh Token Required");
+export const protect = async (req: express.Request, res: express.Response) => {
+  const id =req.body.userid;
+  const userdata = await authModel.findById(id);
+  res.json({ user: userdata });
+};
+
+export const refreshingToken =  async (req: express.Request, res: express.Response) => {
+  const {refresh_token} = req.body;
+  if(!refresh_token){
+    return res.status(400).json({message:"Missing refresh token"});
+  }
 
   try {
-    await userTokenModel.deleteOne({ token: refreshToken });
-    res.status(200).json({message:"Logged out successfully"});
+    const decoded = jwt.verify(refresh_token,process.env.REFRESH_TOKEN) as JwtPayload;
+    const userid = decoded.userid;
+    const refreshToken = await userTokenModel.find({token:refresh_token});
+    console.log("this isFKJDWBFI",refreshToken);
+    
+    if(!refreshToken.length){
+      return res.status(401).json({message:"Invalid refresh token"});
+    }
+
+    const newAccessToken = jwt.sign({userid},process.env.ACCESS_TOKEN,{ expiresIn: process.env.ACCESS_KEY_EXPIRY })
+    return res.json({accessToken:newAccessToken})
+    
   } catch (error) {
-    res.status(500).json({message:"Internal Server Error"});
+   return res. status(401).json({message:"Invalid refresh token"});
   }
-};
+}
