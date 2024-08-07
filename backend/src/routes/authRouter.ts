@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import { userLogin, userSignUp } from '../controllers/authController'; 
-import { loginSuccess, loginFailed } from '../controllers/googleauth'; 
+import { loginSuccess, loginFailed } from '../controllers/googleauthController'; 
 const router = express.Router();
 const clientUrl = "http://localhost:3000"; 
 
