@@ -10,12 +10,17 @@ export const tokenVerification = async (
     res: express.Response,
     next: express.NextFunction
   ) => {  
+    //taking token req.headers
     const accessToken  = req.headers["x-access-token"] as string;
+
+    //checking token 
     const secretKey :string = process.env.ACCESS_TOKEN;
     if (!secretKey) {
       return res.status(500).json({ message: "Unauthorized" });
     }
     try {
+
+      //verifying token
       const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN) as JwtPayload;
       req.body.userid=decoded.userid;
       next();
