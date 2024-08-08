@@ -4,9 +4,9 @@ import { Link as Link2 } from 'react-scroll';
 
 import bg1 from "../assets/images/hero/bg.jpg"
 
-import Navbar from "../componants/navbar";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import {accordionData} from "../data/data"
 

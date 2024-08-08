@@ -1,15 +1,28 @@
-import express from 'express'
-import { logout, protect, refreshingToken, userLogin, userSignUp } from '../controllers/authController';
-import { tokenVerification } from '../middleWare/tokenVerification';
+import express from 'express';
+import passport from 'passport';
+import { loginSuccess, loginFailed, googleCallback} from '../controllers/googleauthController';
+import {forgotPassword,userSignUp,userLogin} from '../controllers/authController';
+
+
 const router = express.Router();
 
 
-router.post('/signup',userSignUp);
-router.post('/login',userLogin)
-router.post('/logout',logout)
-router.get("/protected",tokenVerification,protect);
-router.post("/refreshtoken",refreshingToken)
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback',passport.authenticate('google', { failureRedirect: '/auth/login/failed' }),googleCallback);
+
+router.get('/login/success', loginSuccess);
+router.get('/login/failed', loginFailed);
+router.post('/forgot-password',forgotPassword);
+
+// router.post('/reset-password/:id', reset_password);
 
 
-const authRouter =router
-export default authRouter;
+
+router.post('/signup', userSignUp);
+router.post('/login', userLogin);
+
+export default router;
+
+
+
+

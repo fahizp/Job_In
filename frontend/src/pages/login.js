@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import bg1 from '../assets/images/hero/bg3.jpg'
 import logo from '../assets/images/logo-dark.png'
+import GoogleAuth from "../components/googleButton";
 
 export default function Login(){
     return(
@@ -42,6 +43,7 @@ export default function Login(){
                                     <span><span className="text-muted me-2 small">Don't have an account ?</span> <Link to="/signup" className="text-dark fw-semibold small">Sign Up</Link></span>
                                 </div>
                             </form>
+                            <GoogleAuth />
                         </div>
                     </div>
                 </div>

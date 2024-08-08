@@ -3,9 +3,9 @@ import { Link, useParams } from "react-router-dom";
 
 import logo1 from '../assets/images/company/lenovo-logo.png'
 
-import NavbarDark from "../componants/navbarDark";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import NavbarDark from "../components/navbarDark";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import {FiLayout, FiMapPin,FiUserCheck, FiClock, FiMonitor, FiBriefcase, FiBook, FiDollarSign, FiArrowRight} from "../assets/icons/vander"
 import { jobData } from "../data/data";

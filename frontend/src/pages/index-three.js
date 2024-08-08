@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import bg1 from '../assets/images/hero/bg3.jpg'
 import heroImg from "../assets/images/hero.jpg"
 
-import Navbar from "../componants/navbar";
-import Counter from '../componants/counter';
-import AboutUs from '../componants/aboutUs';
-import Companies from '../componants/companies';
-import Blog from '../componants/blog';
-import Footer from '../componants/footer';
-import ScrollTop from '../componants/scrollTop';
+import Navbar from "../components/navbar";
+import Counter from '../components/counter';
+import AboutUs from '../components/aboutUs';
+import Companies from '../components/companies';
+import Blog from '../components/blog';
+import Footer from '../components/footer';
+import ScrollTop from '../components/scrollTop';
 
 import { FiSearch, FiClock, FiMapPin, FiDollarSign} from "../assets/icons/vander"
 

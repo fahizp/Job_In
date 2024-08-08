@@ -9,9 +9,10 @@ interface userSignUpInterFace {
   email: string;
   password: string;
 }
-
-interface JwtPayload {
-  userid: string;
+interface forgotPassword {
+  
+  email: string;
+  
 }
 
 

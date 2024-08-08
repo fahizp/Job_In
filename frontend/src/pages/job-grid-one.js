@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 import bg1 from '../assets/images/hero/bg.jpg'
 
-import Navbar from "../componants/navbar";
-import FormSelect from "../componants/formSelect";
-import Footer from "../componants/footer";
-import AboutTwo from "../componants/aboutTwo";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import FormSelect from "../components/formSelect";
+import Footer from "../components/footer";
+import AboutTwo from "../components/aboutTwo";
+import ScrollTop from "../components/scrollTop";
 
 import { jobData } from "../data/data";
 

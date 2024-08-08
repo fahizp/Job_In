@@ -4,10 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import bg1 from "../assets/images/hero/bg.jpg"
 import image1 from "../assets/images/blog/01.jpg"
 
-import Navbar from "../componants/navbar";
-import BlogsSidebars from "../componants/blogsSidebars";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import BlogsSidebars from "../components/blogsSidebars";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { blogData, commentsData } from "../data/data";
 
