@@ -1,9 +1,6 @@
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import express from "express";
-
-interface JwtPayload {
-    userid: string;
-  }
+import { UserSignUpInterface } from "../utils/typos";
 
 export const tokenVerification = async (
     req: express.Request,
@@ -19,13 +16,11 @@ export const tokenVerification = async (
       return res.status(500).json({ message: "Unauthorized" });
     }
     try {
-
       //verifying token
-      const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN) as JwtPayload;
-      req.body.userid=decoded.userid;
+      const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN) as UserSignUpInterface;
+      req.body.userid=decoded.userId;
       next();
     } catch (error) {
-      console.log(error);
       res.status(401).json({ message: "unauthorized" });
     }
   };
