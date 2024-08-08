@@ -885,6 +885,40 @@ $value in $colors {
 /*********************************/
 /*         Feather Icon          */
 /*===============================*/
+
+.google-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: map-get($colors, "google-blue"); // Using the variable from the map
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  
+    &:hover {
+      background-color: darken(map-get($colors, "google-blue"), 10%);
+      transform: translateY(-2px);
+    }
+  
+    &:active {
+      transform: translateY(0);
+    }
+  
+    img {
+      width: 20px; // Adjust the icon size
+      height: 20px; // Adjust the icon size
+      margin-right: 8px;
+    }
+  }
+
+
+
+
 .fea {
     stroke-width: 1.8;
     &.icon-ex-sm {
