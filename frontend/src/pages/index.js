@@ -35,6 +35,7 @@ export default function Index(){
                     <div className="col-md-6">
                         <div className="title-heading">
                             <h1 className="heading text-white fw-bold">Get hired <br/> by the popular <br/> candidates.</h1>
+            
                             <p className="para-desc text-white-50 mb-0">Find Jobs, Employment & Career Opportunities. Some of the companies we've helped recruit excellent applicants over the years.</p>
 
                             <div className="text-center subscribe-form mt-4">
