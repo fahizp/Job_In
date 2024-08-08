@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 import bg1 from '../assets/images/hero/bg.jpg'
 
-import Navbar from "../componants/navbar";
-import Faq from "../componants/faq";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import Faq from "../components/faq";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { jobData } from "../data/data";
 

@@ -14,11 +14,11 @@ import company8 from '../images/company/snapchat.png'
 import about3 from "../images/about/ab03.jpg"
 import about4 from "../images/about/ab04.jpg"
 
-import Navbar from '../componants/navbar';
-import AboutUs from "../componants/aboutUs";
-import Categories from "../componants/categories";
-import Blog from '../componants/blog';
-import Footer from '../componants/footer';
+import Navbar from '../components/navbar';
+import AboutUs from "../components/aboutUs";
+import Categories from "../components/categories";
+import Blog from '../components/blog';
+import Footer from '../components/footer';
 
 import { jobData, servicesData } from "../data/data";
 

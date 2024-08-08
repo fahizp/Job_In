@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 
 import bg1 from "../assets/images/hero/bg.jpg"
-import Navbar from "../componants/navbar";
+import Navbar from "../components/navbar";
 import { accordionData } from '../data/data';
-import Footer from '../componants/footer';
+import Footer from '../components/footer';
 
 import {FiArrowRight} from "../assets/icons/vander"
-import ScrollTop from '../componants/scrollTop';
+import ScrollTop from '../components/scrollTop';
 
 export default function Terms(){
     let [activeIndex,setActiveIndex] = useState(0)

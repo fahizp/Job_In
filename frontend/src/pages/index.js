@@ -12,14 +12,14 @@ import company6 from '../assets/images/company/linkedin.png'
 import company7 from '../assets/images/company/skype.png'
 import company8 from '../assets/images/company/snapchat.png'
 
-import Navbar from '../componants/navbar';
-import AboutUs from "../componants/aboutUs";
-import Categories from "../componants/categories";
-import Blog from '../componants/blog';
-import Footer from '../componants/footer';
-import Companies from '../componants/companies';
-import AboutTwo from '../componants/aboutTwo';
-import ScrollTop from '../componants/scrollTop';
+import Navbar from '../components/navbar';
+import AboutUs from "../components/aboutUs";
+import Categories from "../components/categories";
+import Blog from '../components/blog';
+import Footer from '../components/footer';
+import Companies from '../components/companies';
+import AboutTwo from '../components/aboutTwo';
+import ScrollTop from '../components/scrollTop';
 
 import { jobData } from "../data/data";
 
@@ -35,6 +35,7 @@ export default function Index(){
                     <div className="col-md-6">
                         <div className="title-heading">
                             <h1 className="heading text-white fw-bold">Get hired <br/> by the popular <br/> candidates.</h1>
+            
                             <p className="para-desc text-white-50 mb-0">Find Jobs, Employment & Career Opportunities. Some of the companies we've helped recruit excellent applicants over the years.</p>
 
                             <div className="text-center subscribe-form mt-4">

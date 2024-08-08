@@ -15,7 +15,7 @@ const GoogleAuth = () => {
       const { data } = await axios.get("http://localhost:8000/auth/login/success", { withCredentials: true });
       setUser(data.user);
       if (data.user) {
-        navigate('/profile');
+        navigate('/candidate-profile/:id');
       }
     } catch (error) {
       console.error('Error fetching user data:', error.response?.data);
@@ -33,7 +33,6 @@ const GoogleAuth = () => {
   return (
     <div className="d-flex justify-content-center mt-5">
       <button className="btn btn-primary" onClick={handleGoogleLogin}>
-        <img src="path/to/google-icon.png" alt="Google Icon" className="me-2" />
         Sign in with Google
       </button>
     </div>

@@ -1,25 +1,29 @@
 import mongoose from "mongoose";
 
-const signUpSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+const signUpSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+    },
+    profilePic: {
+      type: String,
+    },
+    googleId: { type: String, required: true, unique: true },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password:{
-    type:String,
-    required:true,
-  },
-},{
-  timestamps:true
-});
+  {
+    timestamps: true,
+  }
+);
 
-const authModel = mongoose.model("signUp",signUpSchema);
+const authModel = mongoose.model("signUp", signUpSchema);
 
 export default authModel;
-
-

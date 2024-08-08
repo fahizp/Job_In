@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import image1 from "../assets/images/team/01.jpg"
 import bg1 from "../assets/images/hero/bg5.jpg"
 
-import NavbarDark from "../componants/navbarDark";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import NavbarDark from "../components/navbarDark";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { FiCamera } from "../assets/icons/vander"
 

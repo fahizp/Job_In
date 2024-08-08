@@ -1,26 +1,28 @@
 import express from 'express';
 import passport from 'passport';
-import { userLogin, userSignUp } from '../controllers/authController'; 
-import { loginSuccess, loginFailed } from '../controllers/googleauthController'; 
+import { loginSuccess, loginFailed, googleCallback} from '../controllers/googleauthController';
+import {forgotPassword,userSignUp,userLogin} from '../controllers/authController';
+
+
 const router = express.Router();
-const clientUrl = "http://localhost:3000"; 
+
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback',passport.authenticate('google', { failureRedirect: '/auth/login/failed' }),googleCallback);
+
+router.get('/login/success', loginSuccess);
+router.get('/login/failed', loginFailed);
+router.post('/forgot-password',forgotPassword);
+
+// router.post('/reset-password/:id', reset_password);
 
 
 
 router.post('/signup', userSignUp);
 router.post('/login', userLogin);
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/auth/login/failed',
-  }),
-  (req, res) => {
-    res.redirect(clientUrl);
-  }
-);
-router.get('/login/success', loginSuccess);
-router.get('/login/failed', loginFailed);
-
-
 
 export default router;
+
+
+
+
