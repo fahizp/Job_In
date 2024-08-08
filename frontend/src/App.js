@@ -30,7 +30,7 @@ import ContactUs from "./pages/contactus";
 import Error from "./pages/error";
 import Comingsoom from "./pages/comingsoon";
 import Maintenance from "./pages/maintenance";
-import Logout from "./componants/logout";
+import Logout from "./components/logout";
 
 
 function App() {

@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 
 import bg1 from "../assets/images/hero/bg.jpg"
 
-import Navbar from "../componants/navbar";
-import Footer from "../componants/footer";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
 
 import { blogData } from "../data/data";
 
 import {FiClock, FiCalendar} from "../assets/icons/vander"
-import ScrollTop from "../componants/scrollTop";
+import ScrollTop from "../components/scrollTop";
 
 export default function Blogs(){
     return(

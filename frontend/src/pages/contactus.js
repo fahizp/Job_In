@@ -6,9 +6,9 @@ import contact from "../assets/images/svg/contact.svg"
 
 import { contactData } from "../data/data";
 
-import Navbar from "../componants/navbar";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 export default function ContactUs(){
     return(

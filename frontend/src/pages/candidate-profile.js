@@ -9,9 +9,9 @@ import company2 from "../assets/images/company/lenovo-logo.png"
 import pdf from "../assets/images/calvin-carlo-resume.pdf"
 import image1 from "../assets/images/team/01.jpg"
 
-import NavbarDark from "../componants/navbarDark";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import NavbarDark from "../components/navbarDark";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { candidateSkill, candidatesData } from "../data/data";
 import {

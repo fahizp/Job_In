@@ -12,14 +12,14 @@ import company6 from '../assets/images/company/linkedin.png'
 import company7 from '../assets/images/company/skype.png'
 import company8 from '../assets/images/company/snapchat.png'
 
-import Navbar from '../componants/navbar';
-import AboutUs from "../componants/aboutUs";
-import Categories from "../componants/categories";
-import Blog from '../componants/blog';
-import Footer from '../componants/footer';
-import Companies from '../componants/companies';
-import AboutTwo from '../componants/aboutTwo';
-import ScrollTop from '../componants/scrollTop';
+import Navbar from '../components/navbar';
+import AboutUs from "../components/aboutUs";
+import Categories from "../components/categories";
+import Blog from '../components/blog';
+import Footer from '../components/footer';
+import Companies from '../components/companies';
+import AboutTwo from '../components/aboutTwo';
+import ScrollTop from '../components/scrollTop';
 
 import { jobData } from "../data/data";
 

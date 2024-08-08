@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import bg1 from '../assets/images/hero/bg3.jpg'
 import logo from '../assets/images/logo-dark.png'
-import GoogleAuth from "../componants/googleButton";
+import GoogleAuth from "../components/googleButton";
 
 export default function Login(){
     return(
