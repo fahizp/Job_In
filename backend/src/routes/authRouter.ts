@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import { loginSuccess, loginFailed, googleCallback} from '../controllers/googleauthController';
-import {forgotPassword,userSignUp,userLogin} from '../controllers/authController';
+import {userSignUp,userLogin} from '../controllers/authController';
 
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.get('/google/callback',passport.authenticate('google', { failureRedirect:
 
 router.get('/login/success', loginSuccess);
 router.get('/login/failed', loginFailed);
-router.post('/forgot-password',forgotPassword);
+// router.post('/forgot-password',forgotPassword);
 
 // router.post('/reset-password/:id', reset_password);
 

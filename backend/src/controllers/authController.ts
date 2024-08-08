@@ -137,30 +137,30 @@ export const protect = async (req: express.Request, res: express.Response) => {
 
 
 // refresh Token 
-export const refreshingToken =  async (req: express.Request, res: express.Response) => {
-  const {refresh_token} = req.body;
-  if(!refresh_token){
-    return res.status(400).json({message:"Missing refresh token"});
+export const refreshingToken = async (req: express.Request, res: express.Response) => {
+  const { refresh_token } = req.body;
+  if (!refresh_token) {
+    return res.status(400).json({ message: "Missing refresh token" });
   }
 
   try {
     //token verifying
-    const decoded = jwt.verify(refresh_token,process.env.REFRESH_TOKEN) as JwtPayload;
-    const userid = decoded.userid;
-    // taken token from db (userTokenModel) using verified token userid
-    const refreshToken = await userTokenModel.find({token:refresh_token});
+    const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as { userId: string };
+    const userId = decoded.userId;
+    // taken token from db (userTokenModel) using verified token userId
+    const refreshToken = await userTokenModel.find({ token: refresh_token });
     
     //checking token 
-    if(!refreshToken.length){
-      return res.status(401).json({message:"Invalid refresh token"});
+    if (!refreshToken.length) {
+      return res.status(401).json({ message: "Invalid refresh token" });
     }
 
     //generating new accestoken 
-    const newAccessToken = jwt.sign({userid},process.env.ACCESS_TOKEN,{ expiresIn: process.env.ACCESS_KEY_EXPIRY })
-    return res.json({accessToken:newAccessToken})
+    const newAccessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN as string, { expiresIn: process.env.ACCESS_KEY_EXPIRY })
+    return res.json({ accessToken: newAccessToken })
     
   } catch (error) {
-   return res. status(401).json({message:"Invalid refresh token"});
+    return res.status(401).json({ message: "Invalid refresh token" });
   }
 }
 
