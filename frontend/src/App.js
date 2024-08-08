@@ -30,13 +30,14 @@ import ContactUs from "./pages/contactus";
 import Error from "./pages/error";
 import Comingsoom from "./pages/comingsoon";
 import Maintenance from "./pages/maintenance";
+import Logout from "./componants/logout";
 
 
 function App() {
   return (
    <>
    <Routes>
-      <Route path='/' exact element={<Index/>}/>
+      <Route path='/' exact element={<Login/>}/>
       <Route path='/index' element={<Index/>}/>
       
       <Route path='/job-list-one' element={<JobListOne/>}/>
@@ -60,10 +61,10 @@ function App() {
       <Route path='/blog-sidebar' element={<BlogSidebar/>}/>
       <Route path='/blog-detail' element={<BlogDetail/>}/>
       <Route path='/blog-detail/:id' element={<BlogDetail/>}/>
-      <Route path='/login' element={<Login/>}/>
+      {/* <Route path='/login' element={<Login/>}/> */}
       <Route path='/signup' element={<Signup/>}/>
       <Route path='/reset-password' element={<ResetPassword/>}/>
-      <Route path='/lock-screen' element={<LockScreen/>}/>
+      <Route path='/Logout' element={<Logout/>}/>
       <Route path='/terms' element={<Terms/>}/>
       <Route path='/privacy' element={<Privacy/>}/>
       <Route path='/contactus' element={<ContactUs/>}/>
