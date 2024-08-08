@@ -115,20 +115,20 @@ export const forgotPassword = async (
 };
 
 
-export const reset_password = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { password } = req.body;
+// export const reset_password = async (req: Request, res: Response) => {
+//   const { id } = req.params;
+//   const { password } = req.body;
 
-  try {
-    const user = await UserModel.findByIdAndUpdate(id, { password: password });
-    if (!user) {
-      res.status(404).send({ Status: "User not found" });
-      return;
-    }
-    res.send({ Status: "Success" });
-  } catch (error) {
-    console.error('Error updating password:', error);
-    res.status(500).send({ Status: "Error", error: error.message });
-  }
-};
+//   try {
+//     const user = await UserModel.findByIdAndUpdate(id, { password: password });
+//     if (!user) {
+//       res.status(404).send({ Status: "User not found" });
+//       return;
+//     }
+//     res.send({ Status: "Success" });
+//   } catch (error) {
+//     console.error('Error updating password:', error);
+//     res.status(500).send({ Status: "Error", error: error.message });
+//   }
+// };
 
