@@ -9,7 +9,7 @@ const GoogleAuth = () => {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      navigate("/index"); // Redirect to profile if accessToken is present
+      navigate("/index"); 
     } else {
       getUser();
     }
@@ -23,12 +23,10 @@ const GoogleAuth = () => {
             localStorage.setItem("accessToken", data.accessToken);
             navigate(`/candidate-profile/${data.user._id}`);
         } else {
-            // If no user data is found, navigate to the home page
             navigate("/");
         }
     } catch (error) {
         console.error('Error fetching user data:', error.response?.data);
-        // Navigate to the home page if there's an error
         navigate("/");
     }
 };
