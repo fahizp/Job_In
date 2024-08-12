@@ -22,7 +22,10 @@ export default function Signup() {
     }, [navigate]);
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required("Name is required")
+        name: Yup.string() .matches(
+            /^(?=.*[a-zA-Z])(?=.*[0-9])/,
+            "username must contain both letters and numbers"
+        )
         .required("name is required"),
         
         email: Yup.string()
@@ -42,7 +45,7 @@ export default function Signup() {
         try {
             await validationSchema.validate({ name, email, password }, { abortEarly: false });
 
-            const response = await axios.post("http://localhost:8001/api/signup", {
+            const response = await axios.post("http://localhost:8001/auth/signup", {
                 name,
                 email,
                 password,
