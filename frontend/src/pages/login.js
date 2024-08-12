@@ -1,126 +1,168 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import * as Yup from "yup";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import * as Yup from 'yup';
 import bg1 from '../assets/images/hero/bg3.jpg';
 import logo from '../assets/images/logo-dark.png';
-import GoogleAuth from "../components/googleButton";
+import GoogleAuth from '../components/googleButton';
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({});
-    const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-            navigate("/index");
-        }
-    }, [navigate]);
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      navigate('/index');
+    }
+  }, [navigate]);
 
-    const validationSchema = Yup.object().shape({
-        email: Yup.string()
-            .email("Invalid email format")
-            .required("Email is required"),
-        password: Yup.string()
-            .matches(
-                /^(?=.*[a-zA-Z])(?=.*[0-9])/,
-                "Password must contain both letters and numbers"
-            )
-            .required("Password is required"),
-    });
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email format')
+      .required('Email is required'),
+    password: Yup.string()
+      .matches(
+        /^(?=.*[a-zA-Z])(?=.*[0-9])/,
+        'Password must contain both letters and numbers',
+      )
+      .required('Password is required'),
+  });
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-        try {
-            await validationSchema.validate({ email, password }, { abortEarly: false });
+    try {
+      await validationSchema.validate(
+        { email, password },
+        { abortEarly: false },
+      );
 
-            const response = await axios.post("http://localhost:8001/auth/login", {
-                email,
-                password,
-            });
-            localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-            navigate("/index");
-        } catch (error) {
-            if (error.name === "ValidationError") {
-                const validationErrors = {};
-                error.inner.forEach((err) => {
-                    validationErrors[err.path] = err.message;
-                });
-                setErrors(validationErrors);
-            } else {
-                console.error("Login failed:", error.response?.data?.message || error.message);
-                alert("Login failed: " + (error.response?.data?.message || error.message));
-            }
-        }
-    };
+      const response = await axios.post('http://localhost:8001/auth/login', {
+        email,
+        password,
+      });
+      localStorage.setItem('accessToken', response.data.ACCESS_TOKEN);
+      navigate('/index');
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        const validationErrors = {};
+        error.inner.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+        setErrors(validationErrors);
+      } else {
+        console.error(
+          'Login failed:',
+          error.response?.data?.message || error.message,
+        );
+        alert(
+          'Login failed: ' + (error.response?.data?.message || error.message),
+        );
+      }
+    }
+  };
 
-    return (
-        <section className="bg-home d-flex align-items-center" style={{ backgroundImage: `url(${bg1})`, backgroundPosition: 'center' }}>
-            <div className="bg-overlay bg-linear-gradient-2"></div>
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-4 col-md-5 col-12">
-                        <div className="p-4 bg-white rounded shadow-md mx-auto w-100" style={{ maxWidth: '400px' }}>
-                            <form onSubmit={handleSubmit}>
-                                <Link to="/"><img src={logo} className="mb-4 d-block mx-auto" alt=""/></Link>
-                                <h6 className="mb-3 text-uppercase fw-semibold">Please sign in</h6>
+  return (
+    <section
+      className='bg-home d-flex align-items-center'
+      style={{ backgroundImage: `url(${bg1})`, backgroundPosition: 'center' }}
+    >
+      <div className='bg-overlay bg-linear-gradient-2'></div>
+      <div className='container'>
+        <div className='row'>
+          <div className='col-lg-4 col-md-5 col-12'>
+            <div
+              className='p-4 bg-white rounded shadow-md mx-auto w-100'
+              style={{ maxWidth: '400px' }}
+            >
+              <form onSubmit={handleSubmit}>
+                <Link to='/'>
+                  <img src={logo} className='mb-4 d-block mx-auto' alt='' />
+                </Link>
+                <h6 className='mb-3 text-uppercase fw-semibold'>
+                  Please sign in
+                </h6>
 
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold">Your Email</label>
-                                    <input
-                                        name="email"
-                                        id="email"
-                                        type="email"
-                                        className="form-control"
-                                        placeholder="example@website.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                    {errors.email && <div className="text-danger small">{errors.email}</div>}
-                                </div>
-
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold" htmlFor="loginpass">Password</label>
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        id="loginpass"
-                                        placeholder="Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)} 
-                                    />
-                                    {errors.password && <div className="text-danger small">{errors.password}</div>}
-                                </div>
-
-                                <div className="d-flex justify-content-between">
-                                    <div className="mb-3">
-                                        <div className="form-check">
-                                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                            <label className="form-label form-check-label text-muted" htmlFor="flexCheckDefault">Remember me</label>
-                                        </div>
-                                    </div>
-                                    <span className="forgot-pass text-muted small mb-0">
-                                        <Link to="/reset-password" className="text-muted">Forgot password?</Link>
-                                    </span>
-                                </div>
-
-                                <button className="btn btn-primary w-100" type="submit">Sign in</button>
-
-                                <div className="col-12 text-center mt-3">
-                                    <span>
-                                        <span className="text-muted me-2 small">Don't have an account?</span>
-                                        <Link to="/signup" className="text-dark fw-semibold small">Sign Up</Link>
-                                    </span>
-                                </div>
-                            </form>
-                            <GoogleAuth />
-                        </div>
-                    </div>
+                <div className='mb-3'>
+                  <label className='form-label fw-semibold'>Your Email</label>
+                  <input
+                    name='email'
+                    id='email'
+                    type='email'
+                    className='form-control'
+                    placeholder='example@website.com'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  {errors.email && (
+                    <div className='text-danger small'>{errors.email}</div>
+                  )}
                 </div>
+
+                <div className='mb-3'>
+                  <label className='form-label fw-semibold' htmlFor='loginpass'>
+                    Password
+                  </label>
+                  <input
+                    type='password'
+                    className='form-control'
+                    id='loginpass'
+                    placeholder='Password'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {errors.password && (
+                    <div className='text-danger small'>{errors.password}</div>
+                  )}
+                </div>
+
+                <div className='d-flex justify-content-between'>
+                  <div className='mb-3'>
+                    <div className='form-check'>
+                      <input
+                        className='form-check-input'
+                        type='checkbox'
+                        value=''
+                        id='flexCheckDefault'
+                      />
+                      <label
+                        className='form-label form-check-label text-muted'
+                        htmlFor='flexCheckDefault'
+                      >
+                        Remember me
+                      </label>
+                    </div>
+                  </div>
+                  <span className='forgot-pass text-muted small mb-0'>
+                    <Link to='/reset-password' className='text-muted'>
+                      Forgot password?
+                    </Link>
+                  </span>
+                </div>
+
+                <button className='btn btn-primary w-100' type='submit'>
+                  Sign in
+                </button>
+
+                <div className='col-12 text-center mt-3'>
+                  <span>
+                    <span className='text-muted me-2 small'>
+                      Don't have an account?
+                    </span>
+                    <Link to='/signup' className='text-dark fw-semibold small'>
+                      Sign Up
+                    </Link>
+                  </span>
+                </div>
+              </form>
+              <GoogleAuth />
             </div>
-        </section>
-    );
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
