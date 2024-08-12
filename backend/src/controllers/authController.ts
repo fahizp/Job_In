@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authModel from '../models/authModel';
 import userTokenModel from '../models/userToken';
-import {  validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import { UserSignUpInterface } from '../utils/typos';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -34,7 +34,7 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId:null,
+      googleId: null,
     });
 
     // saving newUser
@@ -97,7 +97,7 @@ export const userLogin = async (
     }
 
     // password verificaiton
-    const verifyPassword= bcrypt.compare(password , user.password as string);
+    const verifyPassword = bcrypt.compare(password, user.password as string);
     if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     }
@@ -129,7 +129,7 @@ export const userLogin = async (
       REFRESH_TOKEN: refreshToken,
     });
   } catch (error) {
-    console.error('Internal server error:', error); 
+    console.error('Internal server error:', error);
     return res.status(500).send('Internal server error');
   }
 };
@@ -175,7 +175,7 @@ export const refreshingToken = async (
 
     return res.json({ accessToken: newAccessToken });
   } catch (error) {
-    console.error('Invalid refresh token:', error); 
+    console.error('Invalid refresh token:', error);
     return res.status(401).json({ message: 'Invalid refresh token' });
   }
 };
@@ -190,7 +190,7 @@ export const logout = async (req: express.Request, res: express.Response) => {
     await userTokenModel.deleteOne({ token: refresh_token });
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
-    console.error('Internal server error:', error); 
+    console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
