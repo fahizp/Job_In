@@ -7,23 +7,35 @@ const GoogleAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getUser();
-  }, []);
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      navigate("/index"); // Redirect to profile if accessToken is present
+    } else {
+      getUser();
+    }
+  }, [navigate]);
 
   const getUser = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/auth/login/success", { withCredentials: true });
-      setUser(data.user);
-      if (data.user) {
-        navigate('/candidate-profile/:id');
-      }
+        const { data } = await axios.get("http://localhost:8001/auth/login/success", { withCredentials: true });
+        if (data.user) {
+            setUser(data.user);
+            localStorage.setItem("accessToken", data.accessToken);
+            navigate(`/candidate-profile/${data.user._id}`);
+        } else {
+            // If no user data is found, navigate to the home page
+            navigate("/");
+        }
     } catch (error) {
-      console.error('Error fetching user data:', error.response?.data);
+        console.error('Error fetching user data:', error.response?.data);
+        // Navigate to the home page if there's an error
+        navigate("/");
     }
-  };
+};
+
 
   const handleGoogleLogin = () => {
-    window.open("http://localhost:8000/auth/google", "_self");
+    window.open("http://localhost:8001/auth/google", "_self");
   };
 
   if (user) {
