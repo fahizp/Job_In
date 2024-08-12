@@ -1,2 +1,2 @@
-export * from 'react-icons/lu'
-export * from 'react-icons/fi'
+export * from 'react-icons/lu';
+export * from 'react-icons/fi';

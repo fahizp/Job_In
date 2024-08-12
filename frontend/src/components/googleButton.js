@@ -7,9 +7,9 @@ const GoogleAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
-      navigate("/index"); 
+      navigate('/index');
     } else {
       getUser();
     }
@@ -17,32 +17,34 @@ const GoogleAuth = () => {
 
   const getUser = async () => {
     try {
-        const { data } = await axios.get("http://localhost:8001/auth/login/success", { withCredentials: true });
-        if (data.user) {
-            setUser(data.user);
-            localStorage.setItem("accessToken", data.accessToken);
-            navigate(`/candidate-profile/${data.user._id}`);
-        } else {
-            navigate("/");
-        }
+      const { data } = await axios.get(
+        'http://localhost:8001/auth/login/success',
+        { withCredentials: true },
+      );
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem('accessToken', data.accessToken);
+        navigate(`/candidate-profile/${data.user._id}`);
+      } else {
+        navigate('/');
+      }
     } catch (error) {
-        console.error('Error fetching user data:', error.response?.data);
-        navigate("/");
+      console.error('Error fetching user data:', error.response?.data);
+      navigate('/');
     }
-};
-
+  };
 
   const handleGoogleLogin = () => {
-    window.open("http://localhost:8001/auth/google", "_self");
+    window.open('http://localhost:8001/auth/google', '_self');
   };
 
   if (user) {
-    return null; 
+    return null;
   }
 
   return (
-    <div className="d-flex justify-content-center mt-5">
-      <button className="btn btn-primary" onClick={handleGoogleLogin}>
+    <div className='d-flex justify-content-center mt-5'>
+      <button className='btn btn-primary' onClick={handleGoogleLogin}>
         Sign in with Google
       </button>
     </div>
