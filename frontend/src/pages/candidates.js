@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 import bg1 from "../assets/images/hero/bg.jpg"
 
-import Navbar from "../componants/navbar";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { candidatesData } from "../data/data";
 import {FiMessageCircle} from "../assets/icons/vander"

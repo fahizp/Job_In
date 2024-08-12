@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 import bg1 from "../assets/images/hero/bg.jpg"
 
-import Navbar from "../componants/navbar";
-import About from "../componants/aboutUs"
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import About from "../components/aboutUs"
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { servicesData, teamData } from "../data/data";
 import {FiFacebook, FiInstagram, FiTwitter, FiHelpCircle} from "../assets/icons/vander"

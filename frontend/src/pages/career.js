@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 import bg1 from '../assets/images/hero/bg.jpg'
 
-import Navbar from "../componants/navbar";
-import AboutTwo from "../componants/aboutTwo";
-import AboutUs from "../componants/aboutUs";
-import Footer from "../componants/footer";
-import ScrollTop from "../componants/scrollTop";
+import Navbar from "../components/navbar";
+import AboutTwo from "../components/aboutTwo";
+import AboutUs from "../components/aboutUs";
+import Footer from "../components/footer";
+import ScrollTop from "../components/scrollTop";
 
 import { jobOpenings } from "../data/data";
 

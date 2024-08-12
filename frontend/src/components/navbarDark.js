@@ -4,7 +4,7 @@ import logoDark from "../assets/images/logo-dark.png";
 import client from "../assets/images/team/01.jpg";
 import { FiUser, FiLogOut } from "../assets/icons/vander";
 
-export default function Navbar({ navClass, navLight }) {
+export default function NavbarDark({ navClass, navLight }) {
     const [isOpen, setIsopen] = useState(true);
     const [scroll, setScroll] = useState(false);
     const [cartItem, setCartItem] = useState(false);
@@ -77,7 +77,7 @@ export default function Navbar({ navClass, navLight }) {
                                 </Link>
                                 <Link to="/job-post" className="dropdown-item fw-medium fs-6">Candidate Post</Link>
                                 <Link to="/job-apply" className="dropdown-item fw-medium fs-6">Job Apply</Link>
-                                <Link to="login" className="dropdown-item fw-medium fs-6">Logout</Link>
+                                <Link to="/Logout" className="dropdown-item fw-medium fs-6">Logout</Link>
                             </div>
                         </div>
                     </li>

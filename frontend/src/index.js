@@ -3,12 +3,16 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-// import './assets/scss/style.scss'
-// import './assets/css/materialdesignicons.min.css'
+import { GoogleOAuthProvider } from '@react-oauth/google'; 
+
+const clientId = process.env.CLIENT_ID;
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <App />
+    <GoogleOAuthProvider clientId={clientId}> 
+      <App />
+    </GoogleOAuthProvider>
   </BrowserRouter>
 );
 
