@@ -4,6 +4,7 @@ import { UserSignUpInterface } from '../utils/typos';
 
 export const tokenVerification = async (
   req: express.Request,
+
   res: express.Response,
   next: express.NextFunction,
 ) => {
@@ -11,7 +12,7 @@ export const tokenVerification = async (
   const accessToken = req.headers['x-access-token'] as string;
 
   //checking token
-  const secretKey: string = process.env.ACCESS_TOKEN;
+  const secretKey= process.env.ACCESS_TOKEN;
   if (!secretKey) {
     return res.status(500).json({ message: 'Unauthorized' });
   }
@@ -19,11 +20,12 @@ export const tokenVerification = async (
     //verifying token
     const decoded = jwt.verify(
       accessToken,
-      process.env.ACCESS_TOKEN,
+      secretKey,
     ) as UserSignUpInterface;
     req.body.userid = decoded.userId;
     next();
   } catch (error) {
+    console.error('unauthorized', error);
     res.status(401).json({ message: 'unauthorized' });
   }
 };

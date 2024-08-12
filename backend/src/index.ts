@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-const bodyParser = require('body-parser');
-
+import bodyParser from 'body-parser';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';

@@ -13,7 +13,7 @@ import {
   refreshingToken,
 } from '../controllers/authController';
 import { tokenVerification } from '../middleWare/tokenVerification';
-const { body, validationResult } = require('express-validator');
+import { body } from 'express-validator';
 
 const router = express.Router();
 
