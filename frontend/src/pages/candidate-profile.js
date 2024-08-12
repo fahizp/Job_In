@@ -45,7 +45,7 @@ export default function CandidateProfile() {
 
     const getUser = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/auth/login/success", { withCredentials: true });
+            const response = await axios.get("http://localhost:8001/auth/login/success", { withCredentials: true });
             setUser(response.data.user);
         } catch (error) {
             console.error(error.response?.data);
