@@ -17,7 +17,7 @@ const signUpSchema = new mongoose.Schema(
     profilePic: {
       type: String,
     },
-    googleId: { type: String, required: true, unique: true },
+    googleId: { type: String, sparse: true, unique: true },
   },
   {
     timestamps: true,
