@@ -21,7 +21,8 @@
     "react-use": "^17.5.1",
     "sass": "^1.69.5",
     "tiny-slider-react": "^0.5.7",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
