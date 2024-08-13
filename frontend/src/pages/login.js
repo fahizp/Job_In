@@ -59,7 +59,7 @@ export default function Login() {
                 setGeneralError("Invalid email or password"); 
             } else {
                 console.error("Login failed:", error.response?.data?.message || error.message);
-                setGeneralError("Login failed: " + (error.response?.data?.message || error.message));
+                setGeneralError("invalid login credentials");
             }
             toast.error(generalError); 
         }
