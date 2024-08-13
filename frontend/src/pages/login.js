@@ -13,12 +13,12 @@ export default function Login() {
     const [generalError, setGeneralError] = useState(""); 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-            navigate("/index");
-        }
-    }, [navigate]);
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      navigate('/index');
+    }
+  }, [navigate]);
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -36,8 +36,11 @@ export default function Login() {
         event.preventDefault();
         setGeneralError(""); 
 
-        try {
-            await validationSchema.validate({ email, password }, { abortEarly: false });
+    try {
+      await validationSchema.validate(
+        { email, password },
+        { abortEarly: false },
+      );
 
             const response = await axios.post("http://localhost:8001/auth/login", {
                 email,

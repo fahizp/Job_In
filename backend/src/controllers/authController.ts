@@ -1,18 +1,17 @@
-import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import authModel from "../models/authModel";
-import userTokenModel from "../models/userToken";
-import { body, validationResult } from "express-validator";
+import express from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import authModel from '../models/authModel';
+import userTokenModel from '../models/userToken';
+import { validationResult } from 'express-validator';
 import { UserSignUpInterface } from '../utils/typos';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
-
 
 // userSignUp
 export const userSignUp = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
 ) => {
   const { name, email, password }: UserSignUpInterface = req.body;
 
@@ -25,8 +24,8 @@ export const userSignUp = async (
     // checking the email already exist
     const emailExist = await authModel.findOne({ email });
     if (emailExist) {
-      console.log("email already in use");
-      return res.status(409).json({ messaage: "email already exist" });
+      console.log('email already in use');
+      return res.status(409).json({ messaage: 'email already exist' });
     }
 
     // hashing the userpassword
@@ -35,32 +34,32 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId:"",
+      googleId: null,
     });
 
     // saving newUser
     try {
       await newUser.save();
-      console.log("User saved successfully");
+      console.log('User saved successfully');
     } catch (error) {
-      console.error("Error saving user:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error('Error saving user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
 
     //generating access token and refresh tokem
-    let accesToken: string = jwt.sign(
+    const accesToken: string = jwt.sign(
       { userId: newUser._id },
-      process.env.ACCESS_TOKEN,
+      process.env.ACCESS_TOKEN as string,
       {
         expiresIn: process.env.ACCESS_KEY_EXPIRY,
-      }
+      },
     );
-    let refreshToken: string = jwt.sign(
+    const refreshToken: string = jwt.sign(
       { userId: newUser._id },
-      process.env.REFRESH_TOKEN,
+      process.env.REFRESH_TOKEN as string,
       {
         expiresIn: process.env.REFRESH_KEY_EXPIRY,
-      }
+      },
     );
 
     // deleting the user if already exist in userTokenModel
@@ -73,63 +72,65 @@ export const userSignUp = async (
       token: refreshToken,
     }).save();
     return res.status(201).json({
-      message: "created sucessfully",
+      message: 'created sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
     });
   } catch (error) {
-    return res.status(500).json("Internal server error");
+    console.error('Internal server error:', error);
+    return res.status(500).json('Internal server error');
   }
 };
 
 // userLogin
 export const userLogin = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
 ) => {
-  const { email, password }:UserSignUpInterface = req.body;
+  const { email, password }: UserSignUpInterface = req.body;
 
   try {
     // checking the user
-    const user: any = await authModel.findOne({ email });
+    const user = await authModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     // password verificaiton
-    const verifyPassword: any = await bcrypt.compare(password, user.password);
+    const verifyPassword = bcrypt.compare(password, user.password as string);
     if (!verifyPassword) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({ message: 'Invalid password' });
     }
 
     //generating access token and refresh tokem
-    let accesToken: String = await jwt.sign(
+    const accesToken: string = jwt.sign(
       { userId: user._id },
       process.env.ACCESS_TOKEN as string,
-      { expiresIn: process.env.ACCESS_KEY_EXPIRY }
+      { expiresIn: process.env.ACCESS_KEY_EXPIRY },
     );
-    let refreshToken: String = await jwt.sign(
+    const refreshToken: string = jwt.sign(
       { userId: user._id },
       process.env.REFRESH_TOKEN as string,
-      { expiresIn: process.env.REFRESH_KEY_EXPIRY }
+      { expiresIn: process.env.REFRESH_KEY_EXPIRY },
     );
 
     // deleting the user if already exist in userTokenModel
-    const userToken: String = await userTokenModel.findOne({
+    const userToken = await userTokenModel.findOne({
       userId: user._id,
     });
-    if (userToken) await userTokenModel.deleteOne();
+    if (userToken) await userTokenModel.deleteOne({ userId: user._id });
 
     //storing refresh token to userTokenModel
     await new userTokenModel({ userId: user._id, token: refreshToken }).save();
 
     return res.status(201).json({
-      message: "User login sucessfully",
+      message: 'User login sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
     });
   } catch (error) {
-    return res.status(500).send("Internal server error");
+    console.error('Internal server error:', error);
+    return res.status(500).send('Internal server error');
   }
 };
 
@@ -143,18 +144,18 @@ export const protect = async (req: express.Request, res: express.Response) => {
 // refresh Token
 export const refreshingToken = async (
   req: express.Request,
-  res: express.Response
+  res: express.Response,
 ) => {
   const { refresh_token } = req.body;
   if (!refresh_token) {
-    return res.status(400).json({ message: "Missing refresh token" });
+    return res.status(400).json({ message: 'Missing refresh token' });
   }
 
   try {
     //token verifying
     const decoded = jwt.verify(
       refresh_token,
-      process.env.REFRESH_TOKEN as string
+      process.env.REFRESH_TOKEN as string,
     ) as UserSignUpInterface;
     const userId = decoded.userId;
     // taken token from db (userTokenModel) using verified token userId
@@ -162,19 +163,20 @@ export const refreshingToken = async (
 
     //checking token
     if (!refreshToken.length) {
-      return res.status(401).json({ message: "Invalid refresh token" });
+      return res.status(401).json({ message: 'Invalid refresh token' });
     }
 
     //generating new accestoken
     const newAccessToken = jwt.sign(
       { userId },
       process.env.ACCESS_TOKEN as string,
-      { expiresIn: process.env.ACCESS_KEY_EXPIRY }
+      { expiresIn: process.env.ACCESS_KEY_EXPIRY },
     );
-    
+
     return res.json({ accessToken: newAccessToken });
   } catch (error) {
-    return res.status(401).json({ message: "Invalid refresh token" });
+    console.error('Invalid refresh token:', error);
+    return res.status(401).json({ message: 'Invalid refresh token' });
   }
 };
 
@@ -182,13 +184,14 @@ export const refreshingToken = async (
 export const logout = async (req: express.Request, res: express.Response) => {
   const { refresh_token } = req.body;
   // checking refresh token
-  if (!refresh_token) return res.status(401).send("Refresh Token Required");
+  if (!refresh_token) return res.status(401).send('Refresh Token Required');
   try {
     //deleting token from  db (userTokenModel)
     await userTokenModel.deleteOne({ token: refresh_token });
-    res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Internal server error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 

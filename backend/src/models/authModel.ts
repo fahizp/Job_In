@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const signUpSchema = new mongoose.Schema(
   {
@@ -17,9 +17,9 @@ const signUpSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const authModel = mongoose.model("signUp", signUpSchema);
+const authModel = mongoose.model('Users', signUpSchema);
 
 export default authModel;

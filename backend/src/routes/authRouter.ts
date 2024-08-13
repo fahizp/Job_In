@@ -15,20 +15,19 @@ const router = express.Router();
 
 
 router.post(
-  "/signup",
-  body("name", "Username should be alphanumeric")
-    .isLength({ min: 5 })
-    .isAlphanumeric(),
+  '/signup',
+  body('name', 'Username should be minimum 6 characters')
+    .isLength({ min: 6 }),
 
-  body("email")
+  body('email')
     .isEmail()
-    .withMessage("Please Enter a valid email address.")
+    .withMessage('Please Enter a valid email address.')
     .normalizeEmail(),
 
   body("password", "Password should contain at least 5 alphanumeric characters.")
     .isLength({ min: 5 })
     .isAlphanumeric(),
-  userSignUp
+  userSignUp,
 );
 
 router.post("/login", userLogin);

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Logout = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
     useEffect(() => {
         const handleLogout = () => {
@@ -15,7 +15,7 @@ const Logout = () => {
         handleLogout();
     }, [navigate]);
 
-    return null;
+  return null;
 };
 
 export default Logout;

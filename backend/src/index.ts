@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-const bodyParser = require('body-parser');
-
+import bodyParser from 'body-parser';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
@@ -13,20 +12,24 @@ import authRouter from './routes/authRouter';
 const app = express();
 db();
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET as string,
-  resave: false,
-  saveUninitialized: true,
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/auth', authRouter);
