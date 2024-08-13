@@ -8,7 +8,7 @@ import passport from 'passport';
 import cors from 'cors';
 import db from './config/db';
 import authRouter from './routes/authRouter';
-import './controllers/googleauthController';
+
 
 const app = express();
 db();
@@ -30,6 +30,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/auth', authRouter);
+
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
