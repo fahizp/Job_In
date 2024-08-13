@@ -191,3 +191,15 @@ export const logout = async (req: express.Request, res: express.Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+
+export const nameCheck =async (req: express.Request, res: express.Response) => {
+  const { name } = req.body;
+  const existingUser = await authModel.findOne({ name });
+  if (existingUser) {
+      return res.json({ isUnique: false });
+  } else {
+      return res.json({ isUnique: true });
+  }
+}
