@@ -23,15 +23,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: false,
-    saveUninitialized: true,
-  }),
-);
-app.use(passport.initialize());
-app.use(passport.session());
+
 app.use('/auth', authRouter);
 
 
