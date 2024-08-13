@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify"; 
+import 'react-toastify/dist/ReactToastify.css'; 
 import bg1 from '../assets/images/hero/bg3.jpg';
 import logo from '../assets/images/logo-dark.png';
 
@@ -22,11 +24,16 @@ export default function Signup() {
     }, [navigate]);
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string() .matches(
-            /^(?=.*[a-zA-Z])(?=.*[0-9])/,
-            "username must contain both letters and numbers"
-        )
-        .required("name is required"),
+        name: Yup.string()
+            .required("Name is required")
+            .test('unique-name', 'Name already exists', async (value) => {
+                try {
+                    const response = await axios.post('http://localhost:8001/auth/nameCheck', { name: value });
+                    return response.data.isUnique;  
+                } catch (error) {
+                    return false;
+                }
+            }),
         
         email: Yup.string()
             .email("Invalid email format")
@@ -41,6 +48,15 @@ export default function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setErrors({});
+
+        if (!name || !email || !password) {
+            if (!name) toast.error("Name is required");
+            if (!email) toast.error("Email is required");
+            if (!password) toast.error("Password is required");
+            return;
+        }
 
         try {
             await validationSchema.validate({ name, email, password }, { abortEarly: false });
@@ -65,7 +81,7 @@ export default function Signup() {
             } else {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    general: "Error signing up. Please try again.",
+                    general: "Ensure all fields are correctly filled out",
                 }));
             }
         }
@@ -141,6 +157,7 @@ export default function Signup() {
                                     </span>
                                 </div>
                             </form>
+                            <ToastContainer />
                         </div>
                     </div>
                 </div>
