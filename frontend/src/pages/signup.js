@@ -12,6 +12,7 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,12 +28,13 @@ export default function Signup() {
     name: Yup.string()
       .required("Name is required")
       .test('unique-name', 'Name already exists', async (value) => {
-        if (!value) return false; // Ensure value is not empty
+        if (!value) return false; 
         try {
           const response = await axios.post('http://localhost:8001/auth/nameCheck', { name: value });
           return response.data.isUnique;  
         } catch (error) {
-          return false;
+          toast.error("Failed to check name uniqueness");
+          return false; 
         }
       }),
     email: Yup.string()
@@ -49,7 +51,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-
+    setLoading(true);
     try {
       await validationSchema.validate({ name, email, password }, { abortEarly: false });
 
@@ -76,6 +78,8 @@ export default function Signup() {
           general: "Error signing up. Please try again.",
         }));
       }
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -143,7 +147,9 @@ export default function Signup() {
                   </label>
                 </div>
 
-                <button className="btn btn-primary w-100" type="submit">Register</button>
+                <button className="btn btn-primary w-100" type="submit" disabled={loading}>
+                  {loading ? "Registering..." : "Register"}
+                </button>
 
                 <div className="col-12 text-center mt-3">
                   <span>
