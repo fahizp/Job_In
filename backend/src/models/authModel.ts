@@ -24,6 +24,6 @@ const signUpSchema = new mongoose.Schema(
   },
 );
 
-const authModel = mongoose.model('signUp', signUpSchema);
+const authModel = mongoose.model('Users', signUpSchema);
 
 export default authModel;
