@@ -29,14 +29,11 @@ router.get(
 
 router.get('/login/success', loginSuccess);
 router.get('/login/failed', loginFailed);
-// router.post('/forgot-password',forgotPassword);
-// router.post('/reset-password/:id', reset_password);
 
 router.post(
   '/signup',
-  body('name', 'Username should be alphanumeric')
-    .isLength({ min: 5 })
-    .isAlphanumeric(),
+  body('name', 'Username should be minimum 6 characters')
+    .isLength({ min: 6 }),
 
   body('email')
     .isEmail()
