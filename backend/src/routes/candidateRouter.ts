@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { candidatePost } from '../controllers/candidateController';
+import { candidateList, candidatePost } from '../controllers/candidateController';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -17,6 +17,7 @@ router.post(
   ]),
   candidatePost,
 );
+router.get('/candidatelist',candidateList);
 
 const candidateRouter = router;
 export default candidateRouter;
