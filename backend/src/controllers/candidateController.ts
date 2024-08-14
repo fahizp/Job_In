@@ -12,7 +12,6 @@ export const candidatePost = async (
   const s3AccessKey = process.env.S3_ACCESS_KEY as string;
   const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string;
 
-
   const s3 = new S3Client({
     credentials: {
       accessKeyId: s3AccessKey,
@@ -104,8 +103,8 @@ export const candidatePost = async (
     const logoCommand = new PutObjectCommand(logoParams);
     await s3.send(logoCommand);
 
-     // Create a new user
-     const newCandidate = new  candidateModel({
+    // Create a new user
+    const newCandidate = new candidateModel({
       firstName,
       lastName,
       email,
@@ -124,13 +123,33 @@ export const candidatePost = async (
       timeLine,
       profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/cvs/${cv[0].originalname}`,
-      logo:`https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${logo[0].originalname}`      
+      logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${logo[0].originalname}`,
     });
 
     await newCandidate.save();
-    res.status(200).json({ message: 'Candidate created successfully', candidate: newCandidate });
+    res
+      .status(200)
+      .json({
+        message: 'Candidate created successfully',
+        candidate: newCandidate,
+      });
   } catch (error) {
     console.error('Error handling form submission:', error);
     res.status(500).send('Internal server error');
   }
+};
+
+export const candidateList = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  try {
+    //getting candidate details from candidate collection
+    const candidateList = await candidateModel.find();
+    return res.status(200).json({"candidateList":candidateList})
+  } catch (error) {
+    console.error('Error on fetching candidate details:', error);
+    res.status(500).send('Internal server error');
+  }
+
 };
