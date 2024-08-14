@@ -1,4 +1,3 @@
-import { strict } from 'assert';
 import mongoose from 'mongoose';
 
 //define a sub-schema for the object in the array
