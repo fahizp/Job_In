@@ -25,6 +25,7 @@ export interface CandidateInterface {
   timeLine: number;
   logo: string;
   salary:string;
+  skills:any;
 }
 
 export interface requestFile {
