@@ -14,6 +14,7 @@ router.post(
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'cv', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
   ]),
   candidatePost,
 );
