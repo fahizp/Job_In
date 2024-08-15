@@ -2,6 +2,7 @@ import express from 'express';
 import candidateModel from '../models/canididateModel';
 import { CandidateInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { log } from 'console';
 
 export const candidatePost = async (
   req: express.Request,
@@ -33,15 +34,14 @@ export const candidatePost = async (
       occupation,
       indroduction,
       salary,
-      title,
-      range,
       role,
       location,
       description,
       timeLine,
+      skills,
     }: CandidateInterface = req.body;
 
-    const { profilePhoto, cv, logo }: any = req.files;
+    const { profilePhoto, cv, logo,banner }: any = req.files;
 
     //checking the required fields
     if (
@@ -103,6 +103,16 @@ export const candidatePost = async (
     const logoCommand = new PutObjectCommand(logoParams);
     await s3.send(logoCommand);
 
+    // Upload Banner
+    const bannerParams = {
+      Bucket: bucketName,
+      Key: `banners/${banner[0].originalname}`,
+      Body: banner[0].buffer,
+      ContentType: banner[0].mimetype,
+    };
+    const bannerCommand = new PutObjectCommand(bannerParams);
+    await s3.send(bannerCommand);
+
     // Create a new user
     const newCandidate = new candidateModel({
       firstName,
@@ -115,24 +125,27 @@ export const candidatePost = async (
       mobileNumber,
       occupation,
       indroduction,
-      title,
-      range,
-      role,
-      location,
-      description,
-      timeLine,
       profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/cvs/${cv[0].originalname}`,
-      logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${logo[0].originalname}`,
+      banner:`https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`,
+      skills: JSON.parse(skills),
+      experience: [
+        {
+          role,
+          location,
+          description,
+          timeLine,
+          logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/logos/${logo[0].originalname}`,
+          salary,
+        },
+      ],
     });
 
     await newCandidate.save();
-    res
-      .status(200)
-      .json({
-        message: 'Candidate created successfully',
-        candidate: newCandidate,
-      });
+    res.status(200).json({
+      message: 'Candidate created successfully',
+      candidate: newCandidate,
+    });
   } catch (error) {
     console.error('Error handling form submission:', error);
     res.status(500).send('Internal server error');
@@ -145,11 +158,20 @@ export const candidateList = async (
 ) => {
   try {
     //getting candidate details from candidate collection
-    const candidateList = await candidateModel.find();
-    return res.status(200).json({"candidateList":candidateList})
+    const candidateList = await candidateModel.aggregate([
+      {
+        $project: {
+          firstName: 1,
+          lastName: 1,
+          occupation: 1,
+          salary: 1,
+          timeLine: 1,
+        },
+      },
+    ]);
+    return res.status(200).json({ candidateList: candidateList });
   } catch (error) {
     console.error('Error on fetching candidate details:', error);
     res.status(500).send('Internal server error');
   }
-
 };
