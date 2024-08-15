@@ -4,4 +4,6 @@ export interface UserSignUpInterface {
   password: string;
   userId: string;
   userid: string;
+  secretKey:string;
+  decoded:string
 }

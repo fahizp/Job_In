@@ -11,16 +11,16 @@ export const tokenVerification = async (
   const accessToken = req.headers['x-access-token'] as string;
 
   //checking token
-  const secretKey: string = process.env.ACCESS_TOKEN;
+  const secretKey = process.env.ACCESS_TOKEN as string;
   if (!secretKey) {
     return res.status(500).json({ message: 'Unauthorized' });
   }
   try {
     //verifying token
-    const decoded = jwt.verify(
-      accessToken,
-      process.env.ACCESS_TOKEN,
-    ) as UserSignUpInterface;
+    const decoded : any = jwt.verify(
+      accessToken as string,
+      secretKey,
+    ) ;
     req.body.userid = decoded.userId;
     next();
   } catch (error) {
