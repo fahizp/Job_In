@@ -20,18 +20,19 @@ export interface CandidateInterface {
   occupation: string;
   indroduction: string;
   title: string;
-  range:String;
+  range:string;
   role: string;
   location: string;
   description: string;
   timeLine: number;
   logo: string;
   salary:string;
-  skills:any;
+  skills:string;
 }
 
 export interface requestFile {
-  profilePhoto: File[];
-  cv: File[];
-  logo:File[]
+  profilePhoto:any ;
+  cv:any  ;
+  logo:any ;
+  banner:any ;
 }
