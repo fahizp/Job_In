@@ -26,6 +26,7 @@ export interface CandidateInterface {
   logo: string;
   salary:string;
   skills:any;
+  companyName:string;
 }
 
 export interface requestFile {

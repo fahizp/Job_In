@@ -21,6 +21,7 @@ router.post(
 
   body('email')
     .isEmail()
+    .matches(/@gmail\.com$/)
     .withMessage('Please Enter a valid email address.')
     .normalizeEmail(),
 
