@@ -5,7 +5,6 @@ import {
   logout,
   protect,
   refreshingToken,
-  nameCheck
 } from "../controllers/authController";
 import { tokenVerification } from "../middleWare/tokenVerification";
 import { body } from "express-validator";
@@ -34,6 +33,5 @@ router.post("/login", userLogin);
 router.post("/logout", logout);
 router.get("/protected", tokenVerification, protect);
 router.post("/refreshtoken", refreshingToken);
-router.post("/nameCheck", nameCheck);
 
 export default router;
