@@ -21,6 +21,9 @@ const experienceSchema = new mongoose.Schema({
   salary:{
     type:String
   }
+  ,companyName:{
+    type:String,
+  }
 });
 
 // Define the main schema with the array field using the sub-schema
