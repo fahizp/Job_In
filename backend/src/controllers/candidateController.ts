@@ -2,7 +2,6 @@ import express from 'express';
 import candidateModel from '../models/canididateModel';
 import { CandidateInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { log } from 'console';
 
 export const candidatePost = async (
   req: express.Request,
@@ -41,7 +40,7 @@ export const candidatePost = async (
       skills,
     }: CandidateInterface = req.body;
 
-    const { profilePhoto, cv, logo,banner }: any = req.files;
+    const { profilePhoto, cv, logo,banner } : any = req.files ;
 
     //checking the required fields
     if (
@@ -61,7 +60,7 @@ export const candidatePost = async (
     }
 
     //checking email already exist
-    const emailExist = await candidateModel.findOne({ email });
+    const emailExist  = await candidateModel.findOne({ email });
     if (emailExist) {
       console.log('email already in use');
       return res.status(409).json({ messaage: 'email already exist' });
