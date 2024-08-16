@@ -14,16 +14,12 @@ const signUpSchema = new mongoose.Schema(
     password: {
       type: String,
     },
-    profilePic: {
-      type: String,
-    },
-    googleId: { type: String, sparse: true, unique: true },
   },
   {
     timestamps: true,
   },
 );
 
-const authModel = mongoose.model('signUp', signUpSchema);
+const authModel = mongoose.model('Users', signUpSchema);
 
 export default authModel;
