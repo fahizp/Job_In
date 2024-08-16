@@ -2,7 +2,7 @@ import express from 'express';
 import candidateModel from '../models/canididateModel';
 import { CandidateInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { log } from 'console';
+import { validationResult } from 'express-validator';
 
 export const candidatePost = async (
   req: express.Request,
@@ -39,8 +39,15 @@ export const candidatePost = async (
       description,
       timeLine,
       skills,
+      companyName,
     }: CandidateInterface = req.body;
 
+
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      return res.status(400).json({ errors: err.array() });
+    }
+   
     const { profilePhoto, cv, logo,banner }: any = req.files;
 
     //checking the required fields
@@ -137,6 +144,7 @@ export const candidatePost = async (
           timeLine,
           logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/logos/${logo[0].originalname}`,
           salary,
+          companyName,
         },
       ],
     });
