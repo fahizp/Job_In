@@ -36,3 +36,17 @@ export interface requestFile {
   logo:any ;
   banner:any ;
 }
+
+export interface profileInterface{
+  username:string;
+  location:string;
+  nameExist:string;
+  updateUserDetails:string;
+  mobile:number;
+  website:string;
+  mobileNumberExist:number;
+  oldPassword:string;
+  newPassword:string;
+  conformPassword:string;
+  existingPassword:string;
+}
