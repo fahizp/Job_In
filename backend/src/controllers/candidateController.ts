@@ -3,6 +3,7 @@ import candidateModel from '../models/canididateModel';
 import { CandidateInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
+// candidate Post
 export const candidatePost = async (
   req: express.Request,
   res: express.Response,
@@ -12,6 +13,7 @@ export const candidatePost = async (
   const s3AccessKey = process.env.S3_ACCESS_KEY as string;
   const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string;
 
+  //configuring an AWS S3 client
   const s3 = new S3Client({
     credentials: {
       accessKeyId: s3AccessKey,
@@ -21,6 +23,7 @@ export const candidatePost = async (
   });
 
   try {
+    //taking values from req.body
     const {
       firstName,
       lastName,
@@ -40,7 +43,7 @@ export const candidatePost = async (
       skills,
     }: CandidateInterface = req.body;
 
-    const { profilePhoto, cv, logo,banner } : any = req.files ;
+    const { profilePhoto, cv, logo, banner }: any = req.files;
 
     //checking the required fields
     if (
@@ -60,7 +63,7 @@ export const candidatePost = async (
     }
 
     //checking email already exist
-    const emailExist  = await candidateModel.findOne({ email });
+    const emailExist = await candidateModel.findOne({ email });
     if (emailExist) {
       console.log('email already in use');
       return res.status(409).json({ messaage: 'email already exist' });
@@ -126,7 +129,7 @@ export const candidatePost = async (
       indroduction,
       profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/cvs/${cv[0].originalname}`,
-      banner:`https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`,
+      banner: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`,
       skills: JSON.parse(skills),
       experience: [
         {
@@ -140,6 +143,7 @@ export const candidatePost = async (
       ],
     });
 
+    //saving new candidate
     await newCandidate.save();
     res.status(200).json({
       message: 'Candidate created successfully',
@@ -151,6 +155,7 @@ export const candidatePost = async (
   }
 };
 
+// candidate list
 export const candidateList = async (
   req: express.Request,
   res: express.Response,
@@ -168,6 +173,7 @@ export const candidateList = async (
         },
       },
     ]);
+
     return res.status(200).json({ candidateList: candidateList });
   } catch (error) {
     console.error('Error on fetching candidate details:', error);
