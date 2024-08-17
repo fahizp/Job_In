@@ -168,7 +168,7 @@ export const passwordReset = async (
     }
 
     //sending response
-    return res.json('this is taking details');
+    return res.status(200).json('Passwowrd reset successful');
   } catch (error) {
     console.error('Internal server error:', error);
     return res.status(500).json({ message: 'Internal server error' });
@@ -208,5 +208,30 @@ export const contactUsPage = async (
     return res.status(200).json({ message: 'Email sent successfully', info });
   } catch (error) {
     res.status(500).json({ message: 'Failed to send email', error });
+  }
+};
+
+// delete account
+export const deleteAccount = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  //taking id from req.params
+  const userId = req.params.id;
+
+  try {
+    //deleting user from authmodel
+    const user = await authModel.findByIdAndDelete(userId);
+   
+    //handling user not found situation 
+    if(!user){
+      return res.status(404).json("user not found")
+    }
+    
+    //sending response
+    return res.status(200).json('Account deleted ');
+  } catch (error) {
+    console.error('Internal server error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

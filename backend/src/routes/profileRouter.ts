@@ -7,6 +7,7 @@ const upload = multer({ storage: storage });
 import {
   contactInfo,
   contactUsPage,
+  deleteAccount,
   passwordReset,
   profileDetails,
 } from '../controllers/profileController';
@@ -44,5 +45,8 @@ router.post(
     .normalizeEmail(),
   contactUsPage,
 );
+
+//delete account 
+router.post('/deleteaccount/:id', deleteAccount);
 
 export default router;
