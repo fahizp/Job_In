@@ -1,13 +1,14 @@
 import express from 'express';
 import multer from 'multer';
-import { candidateList, candidatePost } from '../controllers/candidateController';
+import {
+  candidateList,
+  candidatePost,
+} from '../controllers/candidateController';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Handle multiple files uploaded under the 'photos' field
-// router.post('/upload', upload.array('photos', 12), candidates);
 router.post(
   '/submit',
   upload.fields([
@@ -18,7 +19,7 @@ router.post(
   ]),
   candidatePost,
 );
-router.get('/candidatelist',candidateList);
+router.get('/candidatelist', candidateList);
 
 const candidateRouter = router;
 export default candidateRouter;

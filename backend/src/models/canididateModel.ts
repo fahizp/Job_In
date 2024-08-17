@@ -18,9 +18,9 @@ const experienceSchema = new mongoose.Schema({
   logo: {
     type: String,
   },
-  salary:{
-    type:String
-  }
+  salary: {
+    type: String,
+  },
 });
 
 // Define the main schema with the array field using the sub-schema
@@ -82,10 +82,12 @@ const candidateSchema = new mongoose.Schema(
       required: true,
       maxLength: 520,
     },
-    skills: [{
-      title:{type:String},
-      range:{type:Number}
-    }],
+    skills: [
+      {
+        title: { type: String },
+        range: { type: Number },
+      },
+    ],
     experience: [experienceSchema],
   },
   {

@@ -194,4 +194,3 @@ export const logout = async (req: express.Request, res: express.Response) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
