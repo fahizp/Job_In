@@ -3,6 +3,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { jobInterface } from '../utils/typos';
 import jobApplyModel from '../models/jobModel';
 import { validationResult } from 'express-validator';
+import authModel from '../models/authModel';
 
 //job apply
 export const jobApply = async (req: express.Request, res: express.Response) => {
@@ -75,29 +76,76 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
   }
 };
 
-
 // job list
-export const jobList = async (
-    req: express.Request,
-    res: express.Response,
-  ) => {
-    try {
-      //getting job list from job collection
-      const jobList = await jobApplyModel.aggregate([
-        {
-          $project: {
-            jobTitle: 1,
-            typesOfJobs: 1,
-            Country: 1,
-            logo: 1,
-          },
-        },
-      ]);
-  
-      return res.status(200).json({ jobList: jobList });
-    } catch (error) {
-      console.error('Error on fetching job details:', error);
-      res.status(500).send('Internal server error');
-    }
-  };
-  
+export const jobList = async (req: express.Request, res: express.Response) => {
+  try {
+    //getting job list from job collection
+    // const jobList = await jobApplyModel.aggregate([
+    //   {
+    //     $project: {
+    //       jobTitle: 1,
+    //       typesOfJobs: 1,
+    //       Country: 1,
+    //       logo: 1,
+    //     },
+    //   },
+    // ]);
+
+    return res.status(200).json({ jobList: 'jobList' });
+  } catch (error) {
+    console.error('Error on fetching job list:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+//job details
+export const jobDetails = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  // taking id from req.params
+  const userId = req.params.id;
+
+  try {
+    //updating user contact details
+    // const  jobDetails = await authModel.findById(userId);
+    return res.status(200).json({ jobDetails: 'jobDetails' });
+  } catch (error) {
+    console.error('Error on fetching job details:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+//job serach
+export const jobSearch = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  const { searchQuery } = req.body;
+
+  try {
+    // create a regular experssion for case-insensitve matches
+    const regex = new RegExp(searchQuery, 'i');
+
+    //aggregation for search job
+    // const results = await authModel.aggregate([
+    //   {
+    //     $match:{
+    //       $or:[
+    //         {name:{$regex:regex}},
+    //         {name:{$regex:regex}},
+    //         {name:{$regex:regex}},
+    //       ]
+    //     }
+    //   },
+    //   {$sort:{name:1}},
+    //   {$project:{
+    //     name:1
+    //   }}
+    // ])
+    return res.status(200).json({ results: 'results' });
+  } catch (error) {
+    console.error('Error on searching jobs:', error);
+    res.status(500).send('Internal server error');
+  }
+};
