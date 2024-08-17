@@ -222,12 +222,12 @@ export const deleteAccount = async (
   try {
     //deleting user from authmodel
     const user = await authModel.findByIdAndDelete(userId);
-   
-    //handling user not found situation 
-    if(!user){
-      return res.status(404).json("user not found")
+
+    //handling user not found situation
+    if (!user) {
+      return res.status(404).json('user not found');
     }
-    
+
     //sending response
     return res.status(200).json('Account deleted ');
   } catch (error) {

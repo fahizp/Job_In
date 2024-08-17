@@ -46,7 +46,7 @@ router.post(
   contactUsPage,
 );
 
-//delete account 
+//delete account
 router.post('/deleteaccount/:id', deleteAccount);
 
 export default router;

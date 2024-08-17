@@ -20,9 +20,9 @@ const jobApplySchema = new mongoose.Schema(
     },
 
     description: {
-        type: String,
-        maxLength: 220,
-      },
+      type: String,
+      maxLength: 220,
+    },
     phoneNumber: {
       type: Number,
     },
@@ -35,5 +35,5 @@ const jobApplySchema = new mongoose.Schema(
   },
 );
 
-const jobApplyModel= mongoose.model('Job applies', jobApplySchema);
+const jobApplyModel = mongoose.model('Job applies', jobApplySchema);
 export default jobApplyModel;

@@ -56,10 +56,10 @@ export interface profileInterface {
 }
 
 export interface jobInterface {
-  name:string;
-  email:string;
-  description:string;
-  phoneNumber:string;
-  jobTitle:string;
-  typesOfJobs:string;
+  name: string;
+  email: string;
+  description: string;
+  phoneNumber: string;
+  jobTitle: string;
+  typesOfJobs: string;
 }

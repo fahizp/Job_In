@@ -3,7 +3,6 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { jobInterface } from '../utils/typos';
 import jobApplyModel from '../models/jobModel';
 import { validationResult } from 'express-validator';
-import authModel from '../models/authModel';
 
 //job apply
 export const jobApply = async (req: express.Request, res: express.Response) => {
