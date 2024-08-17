@@ -8,6 +8,7 @@ export const candidatePost = async (
   req: express.Request,
   res: express.Response,
 ) => {
+  // Retrieve and cast environment variables for S3 bucket configuration
   const bucketName = process.env.BUCKET_NAME as string;
   const bucketRegion = process.env.BUCKET_REGION as string;
   const s3AccessKey = process.env.S3_ACCESS_KEY as string;

@@ -35,7 +35,7 @@ router.post(
     .isAlphanumeric(),
   passwordReset,
 );
-
+//contact Us page route
 router.post(
   '/contactUs/sendemail',
   body('email')

@@ -11,6 +11,7 @@ export const profileDetails = async (
   req: express.Request,
   res: express.Response,
 ) => {
+  // Retrieve and cast environment variables for S3 bucket configuration
   const bucketName = process.env.BUCKET_NAME as string;
   const bucketRegion = process.env.BUCKET_REGION as string;
   const s3AccessKey = process.env.S3_ACCESS_KEY as string;
@@ -30,7 +31,8 @@ export const profileDetails = async (
   // taking username and location from req.body
   const { username, location }: profileInterface = req.body;
 
-  const { profilePhoto }: any = req.files;
+  //Retrieve the uploaded file from the request object.
+  const profilePhoto = req.file;
 
   try {
     //checking name is exist
@@ -45,10 +47,11 @@ export const profileDetails = async (
     // Upload Profile Photo
     const profilePhotoParams = {
       Bucket: bucketName,
-      Key: `profile-photos/${profilePhoto[0].originalname}`,
-      Body: profilePhoto[0].buffer,
-      ContentType: profilePhoto[0].mimetype,
+      Key: profilePhoto?.originalname,
+      Body: profilePhoto?.buffer,
+      ContentType: profilePhoto?.mimetype,
     };
+
     const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
     await s3.send(profilePhotoCommand);
 
@@ -56,7 +59,7 @@ export const profileDetails = async (
     const updateUserDetails = (await authModel.findByIdAndUpdate(userId, {
       name: username,
       location,
-      profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
+      profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${profilePhoto?.originalname}`,
     })) as string;
 
     //checking user
