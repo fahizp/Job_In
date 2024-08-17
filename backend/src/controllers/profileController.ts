@@ -3,17 +3,35 @@ import authModel from '../models/authModel';
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import { profileInterface } from '../utils/typos';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import nodemailer from 'nodemailer';
 
 //updating profile details
 export const profileDetails = async (
   req: express.Request,
   res: express.Response,
 ) => {
+  const bucketName = process.env.BUCKET_NAME as string;
+  const bucketRegion = process.env.BUCKET_REGION as string;
+  const s3AccessKey = process.env.S3_ACCESS_KEY as string;
+  const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string;
+
+  //configuring an AWS S3 client
+  const s3 = new S3Client({
+    credentials: {
+      accessKeyId: s3AccessKey,
+      secretAccessKey: s3SecretAccessKey,
+    },
+    region: bucketRegion,
+  });
   // taking id from req.params
   const userId = req.params.id;
 
   // taking username and location from req.body
   const { username, location }: profileInterface = req.body;
+
+  const { profilePhoto }: any = req.files;
+
   try {
     //checking name is exist
     const nameExist = (await authModel.findOne({
@@ -24,10 +42,21 @@ export const profileDetails = async (
       return res.status(409).json({ messaage: 'username already exist' });
     }
 
+    // Upload Profile Photo
+    const profilePhotoParams = {
+      Bucket: bucketName,
+      Key: `profile-photos/${profilePhoto[0].originalname}`,
+      Body: profilePhoto[0].buffer,
+      ContentType: profilePhoto[0].mimetype,
+    };
+    const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
+    await s3.send(profilePhotoCommand);
+
     //updating user details
     const updateUserDetails = (await authModel.findByIdAndUpdate(userId, {
       name: username,
       location,
+      profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
     })) as string;
 
     //checking user
@@ -91,20 +120,21 @@ export const passwordReset = async (
   const userId = req.params.id;
 
   // taking old password , new password and conformPassword from req.body
-  const { oldPassword, newPassword, conformPassword } : profileInterface = req.body;
+  const { oldPassword, newPassword, conformPassword }: profileInterface =
+    req.body;
 
   try {
     //taking existing password from authmodel
     const existingPassword = await authModel.findById(userId);
 
     // password verificaiton
-    const verifyPassword  = bcrypt.compare(
+    const verifyPassword = bcrypt.compare(
       oldPassword,
       existingPassword?.password as string,
     );
 
     // Check if the password verification failed
-    if (!verifyPassword){
+    if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     } else {
       console.log('password verification successfull');
@@ -139,5 +169,41 @@ export const passwordReset = async (
   } catch (error) {
     console.error('Internal server error:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//Contact us page
+export const contactUsPage = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  // taking yourname,email,subject,message from req.body
+  const { yourname, email, subject, message }: profileInterface = req.body;
+
+  try {
+    // Create a transporter object using the nodemailer module
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      // Authentication credentials for the email account
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.APP_PASSWORD,
+      },
+    });
+
+    // Send an email using the transporter object
+    const info = await transporter.sendMail({
+      //name and address of the sender
+      from: { name: yourname, address: email },
+      // to email taken from env
+      to: process.env.EMAIL,
+      //subject of the email
+      subject: subject,
+      //content of the email
+      text: message,
+    });
+    return res.status(200).json({ message: 'Email sent successfully', info });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send email', error });
   }
 };
