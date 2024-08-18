@@ -131,10 +131,10 @@ export const passwordReset = async (
     const existingPassword = await authModel.findById(userId);
 
     // password verificaiton
-    const verifyPassword = bcrypt.compare(
+    const verifyPassword = await bcrypt.compare(
       oldPassword,
       existingPassword?.password as string,
-    );
+    );    
 
     // Check if the password verification failed
     if (!verifyPassword) {
@@ -145,7 +145,7 @@ export const passwordReset = async (
 
     // Check if the new password and confirm password are the same
     if (newPassword === conformPassword) {
-      console.log({ message: 'newPassword === conformPassword is same' });
+      console.log({ message: 'newPassword and conformPassword is same' });
     } else {
       return res.status(401).json({ message: 'check new password' });
     }
