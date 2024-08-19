@@ -42,13 +42,12 @@ export const candidatePost = async (
       companyName,
     }: CandidateInterface = req.body;
 
-
     const err = validationResult(req);
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
     }
-   
-    const { profilePhoto, cv, logo,banner }: any = req.files;
+
+    const { profilePhoto, cv, logo, banner }: any = req.files;
 
     //checking the required fields
     if (
@@ -62,7 +61,8 @@ export const candidatePost = async (
       !country ||
       !mobileNumber ||
       !occupation ||
-      !indroduction
+      !indroduction ||
+      !cv
     ) {
       return res.status(400).send('Missing required fields');
     }
@@ -81,14 +81,21 @@ export const candidatePost = async (
     }
 
     // Upload Profile Photo
-    const profilePhotoParams = {
-      Bucket: bucketName,
-      Key: `profile-photos/${profilePhoto[0].originalname}`,
-      Body: profilePhoto[0].buffer,
-      ContentType: profilePhoto[0].mimetype,
-    };
-    const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
-    await s3.send(profilePhotoCommand);
+    let uploadProfilePhoto;
+    if (profilePhoto) {
+      const profilePhotoParams = {
+        Bucket: bucketName,
+        Key: `profile-photos/${profilePhoto[0].originalname}`,
+        Body: profilePhoto[0].buffer,
+        ContentType: profilePhoto[0].mimetype,
+      };
+      const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
+      uploadProfilePhoto = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`;
+      await s3.send(profilePhotoCommand);
+    } else {
+      uploadProfilePhoto =
+        'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg';
+    }
 
     // Upload CV
     const cvParams = {
@@ -101,25 +108,38 @@ export const candidatePost = async (
     await s3.send(cvCommand);
 
     // Upload logo
-    const logoParams = {
-      Bucket: bucketName,
-      Key: `logos/${logo[0].originalname}`,
-      Body: logo[0].buffer,
-      ContentType: logo[0].mimetype,
-    };
-    const logoCommand = new PutObjectCommand(logoParams);
-    await s3.send(logoCommand);
+    let uploadLogo;
+    if (logo) {
+      const logoParams = {
+        Bucket: bucketName,
+        Key: `logos/${logo[0].originalname}`,
+        Body: logo[0].buffer,
+        ContentType: logo[0].mimetype,
+      };
+      uploadLogo = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/logos/${logo[0].originalname}`;
+      const logoCommand = new PutObjectCommand(logoParams);
+      await s3.send(logoCommand);
+    } else {
+      uploadLogo =
+        'https://jobinproject.s3.ap-south-1.amazonaws.com/blank+comapny+logo.jpeg';
+    }
 
     // Upload Banner
-    const bannerParams = {
-      Bucket: bucketName,
-      Key: `banners/${banner[0].originalname}`,
-      Body: banner[0].buffer,
-      ContentType: banner[0].mimetype,
-    };
-    const bannerCommand = new PutObjectCommand(bannerParams);
-    await s3.send(bannerCommand);
-
+    let uploadBanner;
+    if (banner) {
+      const bannerParams = {
+        Bucket: bucketName,
+        Key: `banners/${banner[0].originalname}`,
+        Body: banner[0].buffer,
+        ContentType: banner[0].mimetype,
+      };
+      uploadBanner = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`;
+      const bannerCommand = new PutObjectCommand(bannerParams);
+      await s3.send(bannerCommand);
+    } else {
+      uploadBanner =
+        'https://jobinproject.s3.ap-south-1.amazonaws.com/default+banner.jpeg';
+    }
     // Create a new user
     const newCandidate = new candidateModel({
       firstName,
@@ -132,9 +152,9 @@ export const candidatePost = async (
       mobileNumber,
       occupation,
       indroduction,
-      profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`,
+      profilePhoto: uploadProfilePhoto,
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/cvs/${cv[0].originalname}`,
-      banner:`https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`,
+      banner: uploadBanner,
       skills: JSON.parse(skills),
       experience: [
         {
@@ -142,7 +162,7 @@ export const candidatePost = async (
           location,
           description,
           timeLine,
-          logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/logos/${logo[0].originalname}`,
+          logo: uploadLogo,
           salary,
           companyName,
         },
@@ -174,8 +194,8 @@ export const candidateList = async (
           occupation: 1,
           salary: 1,
           timeLine: 1,
-          profilePhoto:1,
-          companyName:{ $arrayElemAt: ['$experience.companyName', 0] },
+          profilePhoto: 1,
+          companyName: { $arrayElemAt: ['$experience.companyName', 0] },
         },
       },
     ]);
