@@ -8,6 +8,8 @@ import {
 } from '../controllers/authController';
 import { tokenVerification } from '../middleWare/tokenVerification';
 import { body } from 'express-validator';
+import { googleAuth } from "../controllers/googleAuthController";
+
 
 const router = express.Router();
 
@@ -34,5 +36,6 @@ router.post('/login', userLogin);
 router.post('/logout', logout);
 router.get('/protected', tokenVerification, protect);
 router.post('/refreshtoken', refreshingToken);
+router.post('/google',googleAuth );
 
 export default router;
