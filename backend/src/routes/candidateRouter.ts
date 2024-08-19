@@ -18,6 +18,8 @@ router.post(
   body('timeLine', 'Timeline must be in the format YYYY-YYYY')
   .matches(/^\d{4}-\d{4}$/),
 
+  body('totalExperience', 'Experience must be in the format "1 Year", where "1" can be any number.')
+  .matches(/^\d+ Year$/),
 
   body('email', 'Email must end with @gmail.com')
   .matches(/@gmail\.com$/),
