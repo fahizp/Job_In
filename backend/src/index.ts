@@ -6,6 +6,7 @@ import cors from 'cors';
 import db from './config/db';
 import authRouter from './routes/authRouter';
 import candidateRouter from './routes/candidateRouter';
+import profileRouter from './routes/profileRouter';
 
 const app = express();
 db();
@@ -22,7 +23,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRouter);
-app.use('/candidate',candidateRouter)
+app.use('/candidate', candidateRouter);
+app.use('/profile', profileRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

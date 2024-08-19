@@ -1,14 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import { candidateList, candidatePost } from '../controllers/candidateController';
+import { candidateList, candidatePost,candidateDetails } from '../controllers/candidateController';
 import { body } from "express-validator"; 
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Handle multiple files uploaded under the 'photos' field
-// router.post('/upload', upload.array('photos', 12), candidates);
 router.post(
   '/submit',
   upload.fields([
@@ -25,7 +23,9 @@ router.post(
   .matches(/@gmail\.com$/),
   candidatePost,
 );
-router.get('/candidatelist',candidateList);
+router.get('/candidatelist', candidateList);
+
+router.get('/candidatedetail/:id',candidateDetails);
 
 const candidateRouter = router;
 export default candidateRouter;

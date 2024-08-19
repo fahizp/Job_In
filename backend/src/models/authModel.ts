@@ -5,6 +5,7 @@ const signUpSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      sparce: true,
     },
     email: {
       type: String,
@@ -13,6 +14,19 @@ const signUpSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+    },
+    location: {
+      type: String,
+    },
+    website: {
+      type: String,
+    },
+    mobile: {
+      type: Number,
+    },
+    profilePhoto: {
+      type: String,
+      default: 'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg',
     },
   },
   {

@@ -6,13 +6,8 @@ import userTokenModel from '../models/userToken';
 import { validationResult } from 'express-validator';
 import { UserSignUpInterface } from '../utils/typos';
 import dotenv from 'dotenv';
-import { Console } from 'console';
 dotenv.config();
 
-
-interface NameCheckRequestBody {
-  name: string;
-}
 // userSignUp
 export const userSignUp = async (
   req: express.Request,
@@ -197,27 +192,5 @@ export const logout = async (req: express.Request, res: express.Response) => {
   } catch (error) {
     console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
-
-
-
-export const nameCheck = async (req: express.Request<{}, {}, NameCheckRequestBody>, res: express.Response): Promise<express.Response> => {
-  const { name } = req.body;
-
-  try {
-    const existingUser = await authModel.findOne({ name });
-   console.log(existingUser);
-    
-
-    if (existingUser) {
-      return res.json({ isUnique: false });
-    } else {
-      return res.json({ isUnique: true });
-    }
-    console.log(existingUser);
-  } catch (error) {
-    console.error("Error checking name:", error);
-    return res.status(500).json({ error: "Internal server error" });
   }
 };

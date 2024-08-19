@@ -4,15 +4,18 @@ import { CandidateInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { validationResult } from 'express-validator';
 
+// candidate Post
 export const candidatePost = async (
   req: express.Request,
   res: express.Response,
 ) => {
+  // Retrieve and cast environment variables for S3 bucket configuration
   const bucketName = process.env.BUCKET_NAME as string;
   const bucketRegion = process.env.BUCKET_REGION as string;
   const s3AccessKey = process.env.S3_ACCESS_KEY as string;
   const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string;
 
+  //configuring an AWS S3 client
   const s3 = new S3Client({
     credentials: {
       accessKeyId: s3AccessKey,
@@ -22,6 +25,7 @@ export const candidatePost = async (
   });
 
   try {
+    //taking values from req.body
     const {
       firstName,
       lastName,
@@ -169,6 +173,7 @@ export const candidatePost = async (
       ],
     });
 
+    //saving new candidate
     await newCandidate.save();
     res.status(200).json({
       message: 'Candidate created successfully',
@@ -180,6 +185,7 @@ export const candidatePost = async (
   }
 };
 
+// candidate list
 export const candidateList = async (
   req: express.Request,
   res: express.Response,
@@ -199,9 +205,21 @@ export const candidateList = async (
         },
       },
     ]);
+
     return res.status(200).json({ candidateList: candidateList });
   } catch (error) {
     console.error('Error on fetching candidate details:', error);
     res.status(500).send('Internal server error');
   }
+};
+
+//candidate details
+export const candidateDetails = async (req: express.Request, res: express.Response) => {
+  const id = req.params.id;
+  try{
+      const candidate = await candidateModel.findById({_id:id})
+  return res.status(200).json(candidate)
+  }catch (err) {
+      res.status(500).json(err);
+    }
 };

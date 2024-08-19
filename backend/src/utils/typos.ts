@@ -4,6 +4,8 @@ export interface UserSignUpInterface {
   password: string;
   userId: string;
   userid: string;
+  secretKey: string;
+  decoded: string;
 }
 
 export interface CandidateInterface {
@@ -18,7 +20,7 @@ export interface CandidateInterface {
   occupation: string;
   indroduction: string;
   title: string;
-  range:String;
+  range: string;
   role: string;
   location: string;
   description: string;
@@ -30,7 +32,26 @@ export interface CandidateInterface {
 }
 
 export interface requestFile {
-  profilePhoto: File[];
-  cv: File[];
-  logo:File[]
+  profilePhoto: any;
+  cv: any;
+  logo: any;
+  banner: any;
+}
+
+export interface profileInterface {
+  username: string;
+  location: string;
+  nameExist: string;
+  updateUserDetails: string;
+  mobile: number;
+  website: string;
+  mobileNumberExist: number;
+  oldPassword: string;
+  newPassword: string;
+  conformPassword: string;
+  existingPassword: string;
+  message: string;
+  subject: string;
+  yourname: string;
+  email: string;
 }
