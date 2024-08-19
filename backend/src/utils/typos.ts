@@ -29,6 +29,7 @@ export interface CandidateInterface {
   salary:string;
   skills:any;
   companyName:string;
+  totalExperience:string;
 }
 
 export interface requestFile {
