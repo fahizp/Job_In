@@ -44,6 +44,7 @@ export const candidatePost = async (
       timeLine,
       skills,
       companyName,
+      totalExperience,
     }: CandidateInterface = req.body;
 
     const err = validationResult(req);
@@ -160,6 +161,7 @@ export const candidatePost = async (
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/cvs/${cv[0].originalname}`,
       banner: uploadBanner,
       skills: JSON.parse(skills),
+      salary,
       experience: [
         {
           role,
@@ -167,8 +169,8 @@ export const candidatePost = async (
           description,
           timeLine,
           logo: uploadLogo,
-          salary,
           companyName,
+          totalExperience,
         },
       ],
     });
