@@ -174,6 +174,8 @@ export const candidateList = async (
           occupation: 1,
           salary: 1,
           timeLine: 1,
+          profilePhoto:1,
+          companyName:{ $arrayElemAt: ['$experience.companyName', 0] },
         },
       },
     ]);
