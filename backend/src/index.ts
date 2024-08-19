@@ -7,7 +7,7 @@ import db from './config/db';
 import authRouter from './routes/authRouter';
 import candidateRouter from './routes/candidateRouter';
 import profileRouter from './routes/profileRouter';
-
+import jobRouter from './routes/jobRouter';
 const app = express();
 db();
 
@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/auth', authRouter);
 app.use('/candidate', candidateRouter);
 app.use('/profile', profileRouter);
+app.use('/job', jobRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
