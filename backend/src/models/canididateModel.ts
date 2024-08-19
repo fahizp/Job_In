@@ -18,12 +18,12 @@ const experienceSchema = new mongoose.Schema({
   logo: {
     type: String,
   },
-  salary:{
-    type:String
-  }
-  ,companyName:{
-    type:String,
-  }
+  salary: {
+    type: String,
+  },
+  companyName: {
+    type: String,
+  },
 });
 
 // Define the main schema with the array field using the sub-schema
@@ -31,12 +31,9 @@ const candidateSchema = new mongoose.Schema(
   {
     profilePhoto: {
       type: String,
-      default: 'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg',
     },
     banner: {
       type: String,
-      default:
-        'https://jobinproject.s3.ap-south-1.amazonaws.com/default+banner.jpeg',
     },
     firstName: {
       type: String,
@@ -85,10 +82,12 @@ const candidateSchema = new mongoose.Schema(
       required: true,
       maxLength: 520,
     },
-    skills: [{
-      title:{type:String},
-      range:{type:Number}
-    }],
+    skills: [
+      {
+        title: { type: String },
+        range: { type: Number },
+      },
+    ],
     experience: [experienceSchema],
   },
   {
