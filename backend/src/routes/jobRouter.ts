@@ -5,6 +5,7 @@ import {
   jobApply,
   jobDetails,
   jobList,
+  jobPost,
   jobSearch,
 } from '../controllers/jobController';
 
@@ -12,12 +13,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const router = express.Router();
 
-//updating profile details and username validation
+// job apply and email validation
 router.post(
   '/jobapply/:id',
   upload.single('cv'),
   body('email')
     .isEmail()
+    .matches(/@gmail\.com$/)
     .withMessage('Please Enter a valid email address.')
     .normalizeEmail(),
   jobApply,
@@ -31,5 +33,8 @@ router.get('/jobdetails/:id', jobDetails);
 
 //job search bar
 router.get('/jobsearch', jobSearch);
+
+//job post
+router.post('/jobpost', upload.single('logo'),jobPost)
 
 export default router;
