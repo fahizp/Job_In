@@ -1,6 +1,6 @@
 import express from 'express';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { jobInterface } from '../utils/typos';
+import { jobInterface, MatchStage } from '../utils/typos';
 import { jobApplyModel, jobPostModel } from '../models/jobModel';
 import { validationResult } from 'express-validator';
 
@@ -123,29 +123,57 @@ export const jobSearch = async (
   req: express.Request,
   res: express.Response,
 ) => {
-  const { searchQuery } = req.body;
-
   try {
-    // create a regular experssion for case-insensitve matches
-    const regex = new RegExp(searchQuery, 'i');
+    // taking search parameters from the request body
+    const { keywords, country, jobCategory } = req.body;
 
-    //aggregation for search job
-    const results = await jobPostModel.aggregate([
-      {
-        $match:{
-          $or:[
-            {title:{$regex:regex}},
-            {country:{$regex:regex}},
-            {jobCategory:{$regex:regex}},
-          ]
-        }
+    //array for aggregation stages
+    const pipeline = [];
+
+    //object to hold the criteria for the search
+    const matchStage: MatchStage = {};
+
+    // checking keywords
+    if (keywords) {
+      matchStage.title = { $regex: keywords, $options: 'i' };
+    }
+
+    // checking country
+    if (country) {
+      matchStage.country = { $regex: country, $options: 'i' };
+    }
+
+    //checking job category
+    if (jobCategory) {
+      matchStage.jobCategory = { $regex: jobCategory, $options: 'i' };
+    }
+
+    // push the $match stage to the pipeline
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    // Add the $project stage to the pipeline
+    pipeline.push({
+      $project: {
+        title: 1,
+        jobCategory: 1,
+        country: 1,
+        logo: 1,
+        minSalary: 1,
+        maxSalary: 1,
+        postedDate: 1,
       },
-      // {$sort:{name:1}},
-      {$project:{
-        title:1
-      }}
-    ])
-    return res.status(200).json({ results: results });
+    });
+
+    pipeline.push({
+      $sort: { postedDate: -1 } as Record<string, 1 | -1>,
+    });
+
+    const jobs = await jobPostModel.aggregate(pipeline);
+
+    // Send the search results
+    return res.status(200).json({ results: jobs });
   } catch (error) {
     console.error('Error on searching jobs:', error);
     res.status(500).send('Internal server error');
