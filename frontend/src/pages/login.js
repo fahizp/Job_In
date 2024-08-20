@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
@@ -7,12 +7,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; 
 import bg1 from '../assets/images/hero/bg3.jpg';
 import logo from '../assets/images/logo-dark.png';
+import { UserContext } from '../context/UserContext';
+
+
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [generalError, setGeneralError] = useState(""); 
     const navigate = useNavigate();
+    const { setUserId } = useContext(UserContext); 
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -51,7 +56,7 @@ export default function Login() {
             
             localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
             toast.success("Login successful!"); 
-
+            setUserId(response.data.userId); 
             navigate("/index"); 
             toast.success("Login successful!"); 
 
