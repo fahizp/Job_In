@@ -91,7 +91,7 @@ export default function Navbar({ navClass, navLight }) {
                 className='dropdown-menu dd-menu dropdown-menu-end bg-white rounded shadow border-0 mt-3'
               >
                 <Link
-                  to='/candidate-profile-setting'
+                  to='/profile'
                   className='dropdown-item fw-medium fs-6'
                 >
                   <FiUser className='fea icon-sm me-2 align-middle' />
