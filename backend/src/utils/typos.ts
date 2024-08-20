@@ -26,10 +26,10 @@ export interface CandidateInterface {
   description: string;
   timeLine: number;
   logo: string;
-  salary:string;
-  skills:any;
-  companyName:string;
-  totalExperience:string;
+  salary: string;
+  skills: any;
+  companyName: string;
+  totalExperience: string;
 }
 
 export interface requestFile {
@@ -64,4 +64,20 @@ export interface jobInterface {
   phoneNumber: string;
   jobTitle: string;
   typesOfJobs: string;
+  title: string;
+  companyName: string;
+  jobType: string;
+  jobCategory: string;
+  minSalary: string;
+  maxSalary:string;
+  experience: string;
+  qualification: string;
+  responsibilities: string;
+  Requireds: string;
+  Industry: string;
+  postedDate: string;
+  country:string;
+  state:string;
+  address:string;
+  logo:string;
 }
