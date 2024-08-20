@@ -36,7 +36,7 @@ export const profileDetails = async (
   const userId = req.params.id;
 
   // taking username and location from req.body
-  const { username, location }: profileInterface = req.body;
+  const { username, location, occupation}: profileInterface = req.body;
 
   //Retrieve the uploaded file from the request object.
   const profilePhoto = req.file;
@@ -67,6 +67,7 @@ export const profileDetails = async (
     const updateUserDetails = (await authModel.findByIdAndUpdate(userId, {
       name: username,
       location,
+      occupation,
       profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${profilePhoto?.originalname}`,
     })) as string;
 
