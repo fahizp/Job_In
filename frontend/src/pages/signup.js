@@ -14,6 +14,7 @@ export default function Signup() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  console.log(errors)
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -27,18 +28,9 @@ export default function Signup() {
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .required("Name is required")
-      .test('unique-name', 'Name already exists', async (value) => {
-        if (!value) return false; 
-        try {
-          const response = await axios.post('http://localhost:8001/auth/nameCheck', { name: value });
-          return response.data.isUnique;  
-        } catch (error) {
-          toast.error("Failed to check name uniqueness");
-          return false; 
-        }
-      }),
+      .min(2, 'Name must be at least 2 characters'),
     email: Yup.string()
-      .email("Invalid email format")
+      .matches(/^[^\s@]+@gmail\.com$/, 'Enter Correct Email Format')
       .required("Email is required"),
     password: Yup.string()
       .matches(
@@ -52,6 +44,7 @@ export default function Signup() {
     e.preventDefault();
     setErrors({});
     setLoading(true);
+    
     try {
       await validationSchema.validate({ name, email, password }, { abortEarly: false });
 
@@ -63,20 +56,27 @@ export default function Signup() {
 
       if (response.status === 201) {
         localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-        navigate("/index"); 
+        navigate("/"); 
       }
     } catch (err) {
-      if (err.name === "ValidationError") {
+      if (err.response && err.response.data) {
+        const { error } = err.response.data;
+
+    if (error === 'Name already exists') {
+      toast.error('Name already exists');
+    } else if (error === 'Email already exists') {
+      toast.error('Email already exists');
+    } else {
+          setErrors({ general: 'An unexpected error occurred' });
+        }
+      } else if (err.name === "ValidationError") {
         const validationErrors = {};
         err.inner.forEach((error) => {
           validationErrors[error.path] = error.message;
         });
         setErrors(validationErrors);
       } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          general: "Error signing up. Please try again.",
-        }));
+        setErrors({ general: "iiInternal Server Issue" });
       }
     } finally {
       setLoading(false); 

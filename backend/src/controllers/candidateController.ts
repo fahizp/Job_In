@@ -162,6 +162,7 @@ export const candidatePost = async (
       banner: uploadBanner,
       skills: JSON.parse(skills),
       salary,
+      totalExperience,
       experience: [
         {
           role,
@@ -170,7 +171,6 @@ export const candidatePost = async (
           timeLine,
           logo: uploadLogo,
           companyName,
-          totalExperience,
         },
       ],
     });
@@ -203,6 +203,7 @@ export const candidateList = async (
           salary: 1,
           timeLine: 1,
           profilePhoto: 1,
+          totalExperience:1,
           companyName: { $arrayElemAt: ['$experience.companyName', 0] },
         },
       },

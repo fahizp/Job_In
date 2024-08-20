@@ -55,4 +55,5 @@ export interface profileInterface {
   subject: string;
   yourname: string;
   email: string;
+  occupation: string;
 }

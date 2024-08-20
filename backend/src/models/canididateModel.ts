@@ -3,9 +3,6 @@ import { string } from 'yup';
 
 //define a sub-schema for the object in the array
 const experienceSchema = new mongoose.Schema({
-  totalExperience: {
-    type: String,
-  },
   role: {
     type: String,
   },
@@ -90,6 +87,9 @@ const candidateSchema = new mongoose.Schema(
       },
     ],
     salary: {
+      type: String,
+    },
+    totalExperience: {
       type: String,
     },
     experience: [experienceSchema],
