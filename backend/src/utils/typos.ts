@@ -81,3 +81,10 @@ export interface jobInterface {
   address:string;
   logo:string;
 }
+
+
+export interface MatchStage {
+  title?: { $regex: string; $options: string };
+  country?: { $regex: string; $options: string };
+  jobCategory?: { $regex: string; $options: string };
+}
