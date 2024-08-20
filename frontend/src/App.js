@@ -31,12 +31,16 @@ import Error from './pages/error';
 import Comingsoom from './pages/comingsoon';
 import Maintenance from './pages/maintenance';
 import Logout from './components/logout';
+import Profile from './pages/profile';
+import { UserProvider } from '../src/context/UserContext';
+
 
 function App() {
 
 
   return (
     <>
+     <UserProvider>
       <Routes>
         <Route path='/' exact element={<Login />} />
         <Route path='/index' element={<Index />} />
@@ -65,7 +69,7 @@ function App() {
         <Route path='/blog-sidebar' element={<BlogSidebar />} />
         <Route path='/blog-detail' element={<BlogDetail />} />
         <Route path='/blog-detail/:id' element={<BlogDetail />} />
-        {/* <Route path='/login' element={<Login/>}/> */}
+        <Route path='/profile' element={<Profile/>}/>
         <Route path='/signup' element={<Signup />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/Logout' element={<Logout />} />
@@ -77,6 +81,7 @@ function App() {
         <Route path='/comingsoon' element={<Comingsoom />} />
         <Route path='/maintenance' element={<Maintenance />} />
       </Routes>
+      </UserProvider>
     </>
   );
 }
