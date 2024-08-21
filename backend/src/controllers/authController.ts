@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authModel from '../models/authModel';
 import userTokenModel from '../models/userToken';
-import { body, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import { UserSignUpInterface } from '../utils/typos';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -34,7 +34,7 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId: '',
+      googleId: null,
     });
 
     // saving newUser
@@ -47,14 +47,14 @@ export const userSignUp = async (
     }
 
     //generating access token and refresh tokem
-    let accesToken: string = jwt.sign(
+    const accesToken: string = jwt.sign(
       { userId: newUser._id },
       process.env.ACCESS_TOKEN as string,
       {
         expiresIn: process.env.ACCESS_KEY_EXPIRY,
       },
     );
-    let refreshToken: string = jwt.sign(
+    const refreshToken: string = jwt.sign(
       { userId: newUser._id },
       process.env.REFRESH_TOKEN as string,
       {
@@ -72,11 +72,13 @@ export const userSignUp = async (
       token: refreshToken,
     }).save();
     return res.status(201).json({
+      userId: newUser._id,
       message: 'created sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
     });
   } catch (error) {
+    console.error('Internal server error:', error);
     return res.status(500).json('Internal server error');
   }
 };
@@ -90,24 +92,24 @@ export const userLogin = async (
 
   try {
     // checking the user
-    const user: any = await authModel.findOne({ email });
+    const user = await authModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // password verificaiton
-    const verifyPassword: any = await bcrypt.compare(password, user.password);
+    const verifyPassword = bcrypt.compare(password, user.password as string);
     if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
     //generating access token and refresh tokem
-    let accesToken: string = jwt.sign(
+    const accesToken: string = jwt.sign(
       { userId: user._id },
       process.env.ACCESS_TOKEN as string,
       { expiresIn: process.env.ACCESS_KEY_EXPIRY },
     );
-    let refreshToken: string = jwt.sign(
+    const refreshToken: string = jwt.sign(
       { userId: user._id },
       process.env.REFRESH_TOKEN as string,
       { expiresIn: process.env.REFRESH_KEY_EXPIRY },
@@ -123,11 +125,13 @@ export const userLogin = async (
     await new userTokenModel({ userId: user._id, token: refreshToken }).save();
 
     return res.status(201).json({
+      userId: user._id,
       message: 'User login sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
     });
   } catch (error) {
+    console.error('Internal server error:', error);
     return res.status(500).send('Internal server error');
   }
 };
@@ -173,6 +177,7 @@ export const refreshingToken = async (
 
     return res.json({ accessToken: newAccessToken });
   } catch (error) {
+    console.error('Invalid refresh token:', error);
     return res.status(401).json({ message: 'Invalid refresh token' });
   }
 };
@@ -187,6 +192,7 @@ export const logout = async (req: express.Request, res: express.Response) => {
     await userTokenModel.deleteOne({ token: refresh_token });
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
+    console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
