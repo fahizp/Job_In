@@ -72,6 +72,7 @@ export const userSignUp = async (
       token: refreshToken,
     }).save();
     return res.status(201).json({
+      userId: newUser._id,
       message: 'created sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
@@ -124,6 +125,7 @@ export const userLogin = async (
     await new userTokenModel({ userId: user._id, token: refreshToken }).save();
 
     return res.status(201).json({
+      userId: user._id,
       message: 'User login sucessfully',
       ACCESS_TOKEN: accesToken,
       REFRESH_TOKEN: refreshToken,
