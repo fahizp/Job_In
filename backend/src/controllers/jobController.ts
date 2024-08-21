@@ -131,11 +131,18 @@ export const jobSearch = async (
     const pipeline = [];
 
     //object to hold the criteria for the search
-    const matchStage: MatchStage = {};
+    const matchStage: MatchStage = {
+      $or: [],
+    };
 
     // checking keywords
     if (keywords) {
-      matchStage.title = { $regex: keywords, $options: 'i' };
+      matchStage.$or = [
+        { title: { $regex: keywords, $options: 'i' } },
+        { companyName: { $regex: keywords, $options: 'i' } },
+        { description: { $regex: keywords, $options: 'i' } },
+        { experience: { $regex: keywords, $options: 'i' } },
+      ];
     }
 
     // checking country
@@ -213,7 +220,6 @@ export const jobPost = async (req: express.Request, res: express.Response) => {
       responsibilities,
       description,
       Requireds,
-      Industry,
       address,
     }: jobInterface = req.body;
 
@@ -262,7 +268,6 @@ export const jobPost = async (req: express.Request, res: express.Response) => {
       responsibilities,
       description,
       Requireds,
-      Industry,
       address,
       logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${logo?.originalname}`,
     });
