@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
@@ -9,22 +9,22 @@ import bg1 from '../assets/images/hero/bg3.jpg';
 import logo from '../assets/images/logo-dark.png';
 import { UserContext } from '../context/UserContext';
 
-
-
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [generalError, setGeneralError] = useState(""); 
     const navigate = useNavigate();
-    const { setUserId } = useContext(UserContext); 
+    const { setUserId } = useContext(UserContext);
 
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      navigate('/index');
-    }
-  }, [navigate]);
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            navigate('/index');
+        }
+    }, [navigate]);
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -33,66 +33,82 @@ export default function Login() {
         password: Yup.string()
             .matches(
                 /^(?=.*[a-zA-Z])(?=.*[0-9])/,
-                "Password must contain letters and numbers"
+                "Password must contain both letters and numbers"
             )
             .required("Password is required"),
+        termsAccepted: Yup.boolean()
+            .oneOf([true], 'You must accept the terms and conditions')
+            .required('You must accept the terms and conditions')
     });
+
+    useEffect(() => {
+        validationSchema.validateAt('email', { email })
+            .then(() => setEmailError(''))
+            .catch(err => setEmailError(err.message));
+    }, [email]);
+
+    useEffect(() => {
+        validationSchema.validateAt('password', { password })
+            .then(() => setPasswordError(''))
+            .catch(err => setPasswordError(err.message));
+    }, [password]);
+
+   
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setGeneralError(""); 
 
-    try {
-      await validationSchema.validate(
-        { email, password },
-        { abortEarly: false },
-      );
+        try {
+            await validationSchema.validate(
+                { email, password, termsAccepted },
+                { abortEarly: false },
+            );
 
             const response = await axios.post("http://localhost:8001/auth/login", {
                 email,
                 password,
-                
             });
-            
+
             localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-            toast.success("Login successful!"); 
-            setUserId(response.data.userId); 
-            navigate("/index"); 
-            toast.success("Login successful!"); 
+            setUserId(response.data.userId);
+            toast.success("Login successful!");
+            navigate("/index");
 
         } catch (error) {
             if (error.name === "ValidationError") {
-                setGeneralError("Invalid email or password"); 
+                if (error.errors.includes("Password must contain both letters and numbers")) {
+                    setGeneralError("Password must contain both letters and numbers");
+                } else {
+                    setGeneralError("Invalid email or password");
+                }
             } else {
                 console.error("Login failed:", error.response?.data?.message || error.message);
-                setGeneralError("invalid login credentials");
+                setGeneralError("Invalid login credentials");
             }
-            toast.error(generalError); 
         }
     };
 
-
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-          const response = await axios.post('http://localhost:8001/auth/google', {
-            token: credentialResponse.credential,
-          });
-  
-          localStorage.setItem("accessToken", response.data.accessToken);
-          localStorage.setItem("refreshToken", response.data.refreshToken);
-          toast.success("Login successful!");
-  
-          navigate('/index');
+            const response = await axios.post('http://localhost:8001/auth/google', {
+                token: credentialResponse.credential,
+            });
+
+            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("refreshToken", response.data.refreshToken);
+            toast.success("Login successful!");
+
+            navigate('/index');
         } catch (error) {
-          console.error("Google login failed:", error);
-          toast.error("Google login failed. Please try again.");
+            console.error("Google login failed:", error);
+            toast.error("Google login failed. Please try again.");
         }
-      };
+    };
 
-      const handleGoogleFailure = () => {
+    const handleGoogleFailure = () => {
         toast.error("Google login failed. Please try again.");
-      };
-
+    };
 
     return (
         <>
@@ -115,51 +131,55 @@ export default function Login() {
                                             name="email"
                                             id="email"
                                             type="email"
-                                            className="form-control"
+                                            className={`form-control ${emailError ? 'is-invalid' : ''}`}
                                             placeholder="example@website.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                         />
+                                        {emailError && <div className="invalid-feedback">{emailError}</div>}
                                     </div>
 
                                     <div className="mb-3">
                                         <label className="form-label fw-semibold" htmlFor="loginpass">Password</label>
                                         <input
                                             type="password"
-                                            className="form-control"
+                                            className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                                             id="loginpass"
                                             placeholder="Password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)} 
                                         />
+                                        {passwordError && <div className="invalid-feedback">{passwordError}</div>}
                                     </div>
 
-                                    <div className="d-flex justify-content-between">
-                                        <div className="mb-3">
-                                            <div className="form-check">
-                                                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                                                <label className="form-label form-check-label text-muted" htmlFor="flexCheckDefault">Remember me</label>
-                                            </div>
-                                        </div>
-                                        <span className="forgot-pass text-muted small mb-0">
-                                            <Link to="/reset-password" className="text-muted">Forgot password?</Link>
-                                        </span>
+                                    <div className="form-check mb-3">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="termsAndConditions"
+                                            checked={termsAccepted}
+                                            onChange={(e) => setTermsAccepted(e.target.checked)}
+                                        />
+                                        <label className="form-check-label text-muted" htmlFor="termsAndConditions">
+                                            I accept the <Link to="#" className="text-primary">terms and conditions</Link>
+                                        </label>
+                                        {generalError && <div className="text-danger small">{generalError}</div>}
                                     </div>
 
                                     <button className="btn btn-primary w-100" type="submit">Sign in</button>
-
+                                    <div className="google mt-3">
+                                        <GoogleLogin 
+                                            className="gbutton"
+                                            onSuccess={handleGoogleSuccess}
+                                            onError={handleGoogleFailure}
+                                        />
+                                    </div>
+                                        
                                     <div className="col-12 text-center mt-3">
                                         <span>
                                             <span className="text-muted me-2 small">Don't have an account?</span>
                                             <Link to="/signup" className="text-dark fw-semibold small">Sign Up</Link>
                                         </span>
-                                        <div className="google">
-                                            <GoogleLogin  className="gbutton"
-                                            onSuccess={handleGoogleSuccess}
-                                            onError={handleGoogleFailure}
-                                        />
-                                        </div>
-                                        
                                     </div>
                                 </form>
                             </div>
