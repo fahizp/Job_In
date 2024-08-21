@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import * as Yup from "yup";
-import jwtDecode from 'jwt-decode';
+import { GoogleLogin } from '@react-oauth/google';
 import { toast, ToastContainer } from "react-toastify"; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import bg1 from '../assets/images/hero/bg3.jpg';
@@ -13,6 +13,7 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false); // Initialize termsAccepted state
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -40,15 +41,18 @@ export default function Signup() {
         "Password must contain both letters and numbers"
       )
       .required("Password is required"),
+    termsAccepted: Yup.boolean()
+      .oneOf([true], 'You must accept the terms and conditions')
+      .required('You must accept the terms and conditions')
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
-    
+
     try {
-      await validationSchema.validate({ name, email, password }, { abortEarly: false });
+      await validationSchema.validate({ name, email, password, termsAccepted }, { abortEarly: false });
 
       const response = await axios.post('http://localhost:8001/auth/signup', {
         name,
@@ -57,14 +61,14 @@ export default function Signup() {
       });
 
       if (response.status === 201) {
-        const { userId, ACCESS_TOKEN } = response.data; // Extract userId from response
+        const { userId, ACCESS_TOKEN } = response.data;
   
-        setUserId(userId); // Set userId in context
-        localStorage.setItem("accessToken", ACCESS_TOKEN); // Store token in localStorage
+        setUserId(userId);
+        localStorage.setItem("accessToken", ACCESS_TOKEN);
   
-        console.log('User ID:', userId); // Log userId to the console
+        console.log('User ID:', userId);
   
-        navigate("/index"); // Navigate to the desired page
+        navigate("/index");
       }
     } catch (err) {
       if (err.response && err.response.data) {
@@ -88,6 +92,27 @@ export default function Signup() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post('http://localhost:8001/auth/google', {
+        token: credentialResponse.credential,
+      });
+
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      toast.success("Login successful!");
+
+      navigate('/index');
+    } catch (error) {
+      console.error("Google login failed:", error);
+      toast.error("Google login failed. Please try again.");
+    }
+  };
+
+  const handleGoogleFailure = () => {
+    toast.error("Google login failed. Please try again.");
   };
 
   return (
@@ -148,16 +173,32 @@ export default function Signup() {
                 </div>
 
                 <div className="form-check mb-3">
-                  <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                  <label className="form-label form-check-label text-muted" htmlFor="flexCheckDefault">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="termsAndConditions"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                  />
+                  <label className="form-label form-check-label text-muted" htmlFor="termsAndConditions">
                     I Accept <Link to="#" className="text-primary">Terms And Conditions</Link>
                   </label>
+                  {errors.termsAccepted && <div className="text-danger small">{errors.termsAccepted}</div>}
                 </div>
 
                 <button className="btn btn-primary w-100" type="submit" disabled={loading}>
                   {loading ? "Registering..." : "Register"}
                 </button>
-
+                <div className="or"><h6 className="or1">OR</h6></div>
+                
+                <div className="google">
+                  <GoogleLogin  
+                    className="gbutton"
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleFailure}
+                  />
+                </div>
+                
                 <div className="col-12 text-center mt-3">
                   <span>
                     <span className="text-muted small me-2">Already have an account? </span>
