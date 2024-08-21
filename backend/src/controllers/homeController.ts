@@ -1,5 +1,5 @@
 import express from 'express';
-import { jobApplyModel, jobPostModel } from '../models/jobModel';
+import { jobPostModel } from '../models/jobModel';
 import candidateModel from '../models/canididateModel';
 
 //Home serach
