@@ -87,4 +87,6 @@ export interface MatchStage {
   title?: { $regex: string; $options: string };
   country?: { $regex: string; $options: string };
   jobCategory?: { $regex: string; $options: string };
+  occupation?: { $regex: string; $options: string };
+
 }
