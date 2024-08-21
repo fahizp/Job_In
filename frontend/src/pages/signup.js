@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import * as Yup from "yup";
+import jwtDecode from 'jwt-decode';
 import { toast, ToastContainer } from "react-toastify"; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import bg1 from '../assets/images/hero/bg3.jpg';
 import logo from '../assets/images/logo-dark.png';
+import { UserContext } from '../context/UserContext';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -14,7 +16,7 @@ export default function Signup() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  console.log(errors)
+  const { setUserId } = useContext(UserContext);
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -30,7 +32,7 @@ export default function Signup() {
       .required("Name is required")
       .min(2, 'Name must be at least 2 characters'),
     email: Yup.string()
-      .matches(/^[^\s@]+@gmail\.com$/, 'Enter Correct Email Format')
+      .matches(/^[^\s@]+@gmail\.com$/, 'Enter a valid Gmail address')
       .required("Email is required"),
     password: Yup.string()
       .matches(
@@ -55,18 +57,23 @@ export default function Signup() {
       });
 
       if (response.status === 201) {
-        localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-        navigate("/"); 
+        const { userId, ACCESS_TOKEN } = response.data; // Extract userId from response
+  
+        setUserId(userId); // Set userId in context
+        localStorage.setItem("accessToken", ACCESS_TOKEN); // Store token in localStorage
+  
+        console.log('User ID:', userId); // Log userId to the console
+  
+        navigate("/index"); // Navigate to the desired page
       }
     } catch (err) {
       if (err.response && err.response.data) {
         const { error } = err.response.data;
-
-    if (error === 'Name already exists') {
-      toast.error('Name already exists');
-    } else if (error === 'Email already exists') {
-      toast.error('Email already exists');
-    } else {
+        if (error === 'Name already exists') {
+          toast.error('Name already exists');
+        } else if (error === 'Email already exists') {
+          toast.error('Email already exists');
+        } else {
           setErrors({ general: 'An unexpected error occurred' });
         }
       } else if (err.name === "ValidationError") {
@@ -76,10 +83,10 @@ export default function Signup() {
         });
         setErrors(validationErrors);
       } else {
-        setErrors({ general: "iiInternal Server Issue" });
+        setErrors({ general: "Internal Server Issue" });
       }
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
