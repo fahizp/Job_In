@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { string } from 'yup';
 
 const jobApplySchema = new mongoose.Schema(
   {
@@ -99,9 +98,6 @@ const jobPostSchema = new mongoose.Schema(
     Requireds: {
       type: String,
       maxLength: 520,
-    },
-    Industry: {
-      type: String,
     },
     postedDate: {
       type:Number ,
