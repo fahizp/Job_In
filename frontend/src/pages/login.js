@@ -16,7 +16,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [generalError, setGeneralError] = useState(""); 
     const navigate = useNavigate();
-    const { setUserId } = useContext(UserContext); 
+    const { setUserId } = useContext(UserContext);
 
 
   useEffect(() => {
@@ -54,11 +54,16 @@ export default function Login() {
                 
             });
             
-            localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-            toast.success("Login successful!"); 
-            setUserId(response.data.userId); 
-            navigate("/index"); 
-            toast.success("Login successful!"); 
+            if (response.status === 201) {
+                const { userId, ACCESS_TOKEN } = response.data; // Extract userId from response
+          
+                setUserId(userId); // Set userId in context
+                localStorage.setItem("accessToken", ACCESS_TOKEN); // Store token in localStorage
+          
+                console.log('User ID:', userId); // Log userId to the console
+          
+                navigate("/index"); // Navigate to the desired page
+              } 
 
         } catch (error) {
             if (error.name === "ValidationError") {
