@@ -237,14 +237,22 @@ export const deleteAccount = async (
     if (!user) {
       return res.status(404).json('user not found');
     }
-    // // deleting profile photo from s3 bucket
-    // const params = {
-    //   Bucket: bucketName,
-    //   Key: user.profilePhoto,
-    // };
-    // const command = new DeleteObjectCommand(params);
-    // await s3.send(command);
 
+    console.log("this is profile",user.profilePhoto);
+    
+    // deleting profile photo from s3 bucket
+    const params = {
+      Bucket: bucketName,
+      Key: user.profilePhoto,
+    };
+    const command = new DeleteObjectCommand(params);
+    try {
+      await s3.send(command);
+      console.log('File deleted successfully');
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
+    
     //sending response
     return res.status(200).json('Account deleted ');
   } catch (error) {
