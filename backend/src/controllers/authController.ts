@@ -97,8 +97,11 @@ export const userLogin = async (
       return res.status(404).json({ message: 'User not found' });
     }
 
+    console.log("this is user",user.password);
+    
+
     // password verificaiton
-    const verifyPassword = bcrypt.compare(password, user.password as string);
+    const verifyPassword = await bcrypt.compare(password, user.password as string);
     if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     }
