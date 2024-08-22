@@ -231,19 +231,19 @@ export const deleteAccount = async (
 
   try {
     //deleting user from authmodel
-    const user = await authModel.findByIdAndDelete(userId);
+    const user = await authModel.findByIdAndDelete({_id:userId});
 
     //handling user not found situation
     if (!user) {
       return res.status(404).json('user not found');
     }
-    //deleting profile photo from s3 bucket
-    const params = {
-      Bucket: bucketName,
-      Key: user.profilePhoto,
-    };
-    const command = new DeleteObjectCommand(params);
-    await s3.send(command);
+    // // deleting profile photo from s3 bucket
+    // const params = {
+    //   Bucket: bucketName,
+    //   Key: user.profilePhoto,
+    // };
+    // const command = new DeleteObjectCommand(params);
+    // await s3.send(command);
 
     //sending response
     return res.status(200).json('Account deleted ');
@@ -268,8 +268,8 @@ export const userDetails = async (
       profilePhoto: 1,
       banner: 1,
       occupation: 1,
-      mobile:1,
-      website:1,
+      mobile: 1,
+      website: 1,
     });
 
     //handling user not found situation
