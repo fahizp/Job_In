@@ -97,7 +97,7 @@ export default function Navbar({ navClass, navLight }) {
                   <FiUser className='fea icon-sm me-2 align-middle' />
                   Profile
                 </Link>
-                <Link to='/job-post' className='dropdown-item fw-medium fs-6'>
+                <Link to='/candidate-profile-setting' className='dropdown-item fw-medium fs-6'>
                   Candidate Post
                 </Link>
                 <Link to='/job-apply' className='dropdown-item fw-medium fs-6'>
