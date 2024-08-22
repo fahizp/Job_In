@@ -34,7 +34,7 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId: null,
+      googleId:"",
     });
 
     // saving newUser
