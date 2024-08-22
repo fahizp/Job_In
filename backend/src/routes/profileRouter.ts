@@ -10,6 +10,7 @@ import {
   deleteAccount,
   passwordReset,
   profileDetails,
+  userDetails,
 } from '../controllers/profileController';
 const router = express.Router();
 
@@ -48,5 +49,8 @@ router.post(
 
 //delete account 
 router.post('/deleteaccount/:id', deleteAccount);
+
+//userdetail 
+router.get('/userdetail/:id',userDetails)
 
 export default router;
