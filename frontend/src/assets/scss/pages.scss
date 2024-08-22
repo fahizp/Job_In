@@ -12,3 +12,39 @@ text-align: center;
 margin-left: 150px;
 margin-top: 10px;
 }
+
+
+/* TrashButton.css */
+#trash{
+  background-color: red; 
+  color: white;
+  border: none;
+  border-radius: 50%; 
+ 
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+}
+
+#trash:hover {
+  background-color: rgb(164, 5, 5); 
+}
+
+
+#plus{
+    background-color: rgb(13, 165, 8); 
+    color: white;
+    border: none;
+    border-radius: 50%; 
+   
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  
+}
+
+
+#plus:hover {
+    background-color: rgb(9, 89, 3); 
+  }

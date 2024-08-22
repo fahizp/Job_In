@@ -203,11 +203,13 @@ export const candidateList = async (
           salary: 1,
           timeLine: 1,
           profilePhoto: 1,
-          totalExperience:1,
+          totalExperience: 1,
           companyName: { $arrayElemAt: ['$experience.companyName', 0] },
+          skills: 1,
         },
       },
     ]);
+    
 
     return res.status(200).json({ candidateList: candidateList });
   } catch (error) {
