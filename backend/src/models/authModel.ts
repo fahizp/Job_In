@@ -28,7 +28,7 @@ const signUpSchema = new mongoose.Schema(
       type: String,
       default: 'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg',
     },
-    googleId: { type: String, sparse: true, unique: true },
+    googleId: { type: String, sparse: true },
    
   },
   {
