@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from 'axios';
 import image1 from '../assets/images/team/01.jpg';
 import bg1 from '../assets/images/hero/bg5.jpg';
@@ -6,93 +6,146 @@ import NavbarDark from '../components/navbarDark';
 import Footer from '../components/footer';
 import ScrollTop from '../components/scrollTop';
 import { FiCamera } from '../assets/icons/vander';
+import * as Yup from 'yup';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/bootstrap.css';
+import countryList from 'react-select-country-list';
+import Select from 'react-select';
 
 export default function CandidateProfileSetting() {
+  const [totalExperience, setTotalExperience] = useState('');
   const [timeLine, setTimeLine] = useState({ startYear: '', endYear: '' });
   const [cv, setCv] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
-  const [df, setDf] = useState("");
-  const [title, setTitle] = useState("");
-  const [address, setAddress] = useState("");
-  const [range, setRange] = useState("");
+  const [title, setTitle] = useState('');
+  const [address, setAddress] = useState('');
+  const [range, setRange] = useState('');
   const [profileFile, setProfileFile] = useState(image1);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [location, setLocation] = useState("");
-  const [indroduction, setIndroduction] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [occupation, setOccupation] = useState('');
+  const [location, setLocation] = useState('');
+  const [indroduction, setIndroduction] = useState('');
+  const [phone, setPhone] = useState('');
   const [logo, setLogo] = useState(null);
   const [logoFile, setLogoFile] = useState(image1);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [banner, setBanner] = useState(bg1);
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [role, setRole] = useState("");
-  const [salary, setSalary] = useState("");
-  const [description, setDescription] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [country, setCountry] = useState(null);
+  const [city, setCity] = useState('');
+  const [role, setRole] = useState('');
+  const [salary, setSalary] = useState({
+    minSalary: '',
+    maxSalary: '',
+  });
+  const [description, setDescription] = useState('');
   const [skills, setSkills] = useState([]);
+  const [companyName, setCompanyName] = useState('');
+  const [generalError, setGeneralError] = useState('');
 
-
+  const validationSchema = Yup.object().shape({
+    timeLine: Yup.string()
+      .required('Timeline is required')
+      .matches(/^\d{4}-\d{4}$/, 'Timeline must be in the format YYYY-YYYY')
+      .test(
+        'check-start-end',
+        'End Year must be greater than Start Year',
+        function (value) {
+          const [startYear, endYear] = value.split('-').map(Number);
+          return endYear > startYear;
+        },
+      ),
+    totalExperience: Yup.string()
+      .matches(
+        /^\d+ Year$/,
+        'Experience must be in the format "1 Year", where "1" can be any number.',
+      )
+      .required('Total experience is required'),
+    email: Yup.string()
+      .email('Invalid email format')
+      .required('Email is required'),
+  });
 
   const Submit = async (e) => {
     e.preventDefault();
-  
+    setGeneralError('');
+
+    const timelineString = `${timeLine.startYear}-${timeLine.endYear}`;
+    const salaryString = `${salary.minSalary}-${salary.minSalary}`;
+    const countryName = country.label;
+
     const data = new FormData();
-    data.append("title", title);
-    data.append("range", range);
-    data.append("city", city);
-    data.append("country", country);
-    data.append("dateOfBirth", dateOfBirth);
-    data.append("firstName", firstName);
-    data.append("lastName", lastName);
-    data.append("email", email);
-    data.append("occupation", occupation);
-    data.append("mobileNumber", mobileNumber);
-    data.append("address", address);
-    data.append("location", location);
-    data.append("indroduction", indroduction);
-    data.append("role", role);
-    data.append("salary", salary);
-    data.append("description", description);
-  
-    if (cv) data.append("cv", cv);
-    if (logo) data.append("logo", logo);
-    if (profilePhoto) data.append("profilePhoto", profilePhoto);
-    if (banner) data.append("banner", banner);
-  
+    data.append('totalExperience', totalExperience);
+    data.append('timeLine', timelineString);
+    data.append('title', title);
+    data.append('range', range);
+    data.append('city', city);
+    data.append('country', countryName);
+    data.append('dateOfBirth', dateOfBirth);
+    data.append('firstName', firstName);
+    data.append('lastName', lastName);
+    data.append('email', email);
+    data.append('occupation', occupation);
+    data.append('mobileNumber', phone);
+    data.append('address', address);
+    data.append('location', location);
+    data.append('indroduction', indroduction);
+    data.append('role', role);
+    data.append('salary', salaryString);
+    data.append('description', description);
+    data.append('companyName', companyName);
+
+    if (cv) data.append('cv', cv);
+    if (logo) data.append('logo', logo);
+    if (profilePhoto) data.append('profilePhoto', profilePhoto);
+    if (banner) data.append('banner', banner);
+
     const skillsArray = [];
     skills.forEach((skill, index) => {
       skillsArray.push({ title: skill.title, range: skill.range });
     });
-    
-    data.append("skills", JSON.stringify(skillsArray));
-  
+
+    data.append('skills', JSON.stringify(skillsArray));
+
     for (let pair of data.entries()) {
       console.log(`${pair[0]}: ${pair[1]}`);
     }
-  
+
     try {
-      const response = await axios.post("http://localhost:8001/candidate/submit", data);
-      console.log("Response:", response.data);
-    } catch (err) {
-      console.error("Error:", err);
-      if (err.response) {
-        console.error("Error details:", err.response.data);
+      const response = await axios.post(
+        'http://localhost:8001/candidate/submit',
+        data,
+      );
+
+      console.log('Response:', response.data);
+
+      await validationSchema.validate(
+        { totalExperience, timeLine: timelineString },
+        { abortEarly: false },
+      );
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        setGeneralError(error.errors.join(', '));
       } else {
-        console.error("No response data");
+        console.error(
+          'Submission failed:',
+          error.response?.data?.message || error.message,
+        );
+        setGeneralError('An error occurred during submission.');
       }
     }
   };
+
+
+
   
-
-
-
+  const options = countryList().getData();
 
   const handleAddSkill = () => {
-    setSkills([...skills, { title: "", range: "" }]);
+    setSkills([...skills, { title: '', range: '' }]);
   };
 
   const handleSkillChange = (index, field, value) => {
@@ -106,22 +159,16 @@ export default function CandidateProfileSetting() {
     setSkills(newSkills);
   };
 
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTimeLine((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setTimeLine((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCvChange = (event) => {
     const file = event.target.files[0];
-    console.log("Selected CV file:", file); 
+    console.log('Selected CV file:', file);
     if (file) {
       setCv(file);
-
     }
   };
 
@@ -135,23 +182,33 @@ export default function CandidateProfileSetting() {
 
   const handleLogoChange = (event) => {
     const file = event.target.files[0];
-    console.log("Selected Logo file:", file); 
-    if (file) { 
-      setLogo(file)
+    console.log('Selected Logo file:', file);
+    if (file) {
+      setLogo(file);
       setLogoFile(URL.createObjectURL(file));
-
     }
   };
 
   const handleProfilePhotoChange = (e) => {
     const selectedFile = e.target.files[0];
-    console.log("Selected Profile Photo file:", selectedFile); // Log selected Profile Photo file
+    console.log('Selected Profile Photo file:', selectedFile);
     if (selectedFile) {
-      setProfilePhoto(selectedFile); // Store file object
-      setProfileFile(URL.createObjectURL(selectedFile)); // Display preview
+      setProfilePhoto(selectedFile);
+      setProfileFile(URL.createObjectURL(selectedFile));
     }
   };
 
+  const handlesalaryChange = (e) => {
+    const { name, value } = e.target;
+    setSalary((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const changeHandler = (selectedOption) => {
+    setCountry(selectedOption);
+  };
   return (
     <>
       <NavbarDark />
@@ -162,7 +219,12 @@ export default function CandidateProfileSetting() {
               <div className='position-relative'>
                 <div className='candidate-cover'>
                   <div className='profile-banner relative text-transparent'>
-                    <input id='pro-banner' type='file' onChange={handleBannerChange} style={{ display: 'none' }} />
+                    <input
+                      id='pro-banner'
+                      type='file'
+                      onChange={handleBannerChange}
+                      style={{ display: 'none' }}
+                    />
                     <div className='relative shrink-0'>
                       <img
                         src={bannerFile || banner}
@@ -182,7 +244,6 @@ export default function CandidateProfileSetting() {
                   </div>
 
                   <form onSubmit={Submit} className='position-relative'>
-
                     <input
                       type='file'
                       onChange={handleProfilePhotoChange}
@@ -196,7 +257,7 @@ export default function CandidateProfileSetting() {
                     />
                     <div className='position-relative d-inline-block'>
                       <img
-                        src={profileFile || 'default-profile-image-url'} // Replace with default profile image
+                        src={profileFile || 'default-profile-image-url'}
                         className='avatar avatar-medium img-thumbnail rounded-pill shadow-sm'
                         id='profile-image'
                         alt='Profile'
@@ -210,7 +271,6 @@ export default function CandidateProfileSetting() {
                         </span>
                       </label>
                     </div>
-                    
                   </form>
 
                   <div className='ms-2'>
@@ -221,17 +281,18 @@ export default function CandidateProfileSetting() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className='container'>
-          <div className='row'>
-            <div className='col-12'>
-              <div className='rounded shadow p-4'>
-                <form onSubmit={Submit}>
-                  <div className='rounded shadow p-4 mt-4'>
+          {generalError && (
+            <div className='alert alert-danger' role='alert'>
+              {generalError}
+            </div>
+          )}
+          <form onSubmit={Submit} className='position-relative'>
+            <div className='container'>
+              <div className='row'>
+                <div className='col-12'>
+                  <div className='rounded shadow p-4'>
                     <h5>Personal Detail :</h5>
                     <div className='row mt-4'>
-                      {/* Personal Details Form Fields */}
                       <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
@@ -283,19 +344,16 @@ export default function CandidateProfileSetting() {
                         </div>
                       </div>
 
-                      <div className='col-md-6'>
+                      <div className='col-lg-12'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                            Mobile Number<span className='text-danger'>*</span>
+                            Phone No. :
                           </label>
-                          <input
-                            name='mobileNumber'
-                            id='mobileNumber'
-                            type='text'
-                            className='form-control'
-                            placeholder='Mobile Number:'
-                            onChange={(e) => setMobileNumber(e.target.value)}
-                            required
+                          <PhoneInput
+                            country={'eg'}
+                            enableSearch={true}
+                            value={phone}
+                            onChange={(phone) => setPhone(phone)}
                           />
                         </div>
                       </div>
@@ -339,14 +397,12 @@ export default function CandidateProfileSetting() {
                           <label className='form-label fw-semibold'>
                             Country<span className='text-danger'>*</span>
                           </label>
-                          <input
-                            name='country'
-                            id='country'
-                            type='text'
+                          <Select
+                            options={options}
+                            value={country}
+                            onChange={changeHandler}
+                            placeholder='Select a country'
                             className='form-control'
-                            placeholder='Country:'
-                            onChange={(e) => setCountry(e.target.value)}
-                            required
                           />
                         </div>
                       </div>
@@ -371,11 +427,11 @@ export default function CandidateProfileSetting() {
                       <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                          Address<span className='text-danger'>*</span>
+                            Address<span className='text-danger'>*</span>
                           </label>
                           <input
-                            name='Address'
-                            id='Address'
+                            name='address'
+                            id='address'
                             type='text'
                             className='form-control'
                             placeholder='Address:'
@@ -384,6 +440,54 @@ export default function CandidateProfileSetting() {
                           />
                         </div>
                       </div>
+
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Salary Range <span className='text-danger'>*</span>
+                        </label>
+                        <div className='d-flex'>
+                          <input
+                            type='number'
+                            name='minSalary'
+                            className='form-control me-2'
+                            placeholder='Minimum Salary'
+                            value={salary.minSalary}
+                            onChange={handlesalaryChange}
+                            min='0'
+                            required
+                          />
+                          <input
+                            type='number'
+                            name='maxSalary'
+                            className='form-control'
+                            placeholder='Maximum Salary'
+                            value={salary.maxSalary}
+                            onChange={handlesalaryChange}
+                            min='0'
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            totalExperience
+                            <span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            name='totalExperience'
+                            id='totalExperience'
+                            type='text'
+                            className='form-control'
+                            placeholder='totalExperience:'
+                            value={totalExperience}
+                            onChange={(e) => setTotalExperience(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
                       <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
@@ -392,6 +496,7 @@ export default function CandidateProfileSetting() {
                           <input
                             type='file'
                             accept='.pdf'
+                            className='form-control'
                             onChange={handleCvChange}
                           />
                         </div>
@@ -400,50 +505,63 @@ export default function CandidateProfileSetting() {
                       <div className='col-md-12'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                          indroduction<span className='text-danger'>*</span>
+                            Introduction<span className='text-danger'>*</span>
                           </label>
                           <textarea
-                            name='indroduction'
-                            id='indroduction'
+                            name='introduction'
+                            id='introduction'
                             rows='3'
                             className='form-control'
-                            placeholder='indroduction'
-                            onChange={(e) =>setIndroduction(e.target.value)}
+                            placeholder='Introduction'
+                            onChange={(e) => setIndroduction(e.target.value)}
                             required
                           ></textarea>
                         </div>
                       </div>
+                    </div>
 
-                      <h5>Experience :</h5>
-                      <div className='col-md-6'>
-  <div className='mb-3'>
-    <label className='form-label fw-semibold'>
-      Upload Logo<span className='text-danger'>*</span>
-    </label>
-    <input
-      type='file'
-      accept='image/*'
-      className='form-control'
-      onChange={handleLogoChange}
-    />
-  </div>
-  {logo && (
-    <div>
-      <img src={logoFile} alt='Uploaded Logo' style={{ maxWidth: '100px', maxHeight: '100px' }} />
-    </div>
-  )}
-</div>
+                    <h5>Experience :</h5>
+                    <div className='row'>
                       <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                          role<span className='text-danger'>*</span>
+                            Upload Logo<span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            type='file'
+                            accept='image/*'
+                            className='form-control'
+                            onChange={handleLogoChange}
+                          />
+                        </div>
+                      </div>
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            companyName<span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            name='companyName'
+                            id='companyName'
+                            type='text'
+                            className='form-control'
+                            placeholder='companyName:'
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            Rol<span className='text-danger'>*</span>
                           </label>
                           <input
                             name='role'
                             id='role'
                             type='text'
                             className='form-control'
-                            placeholder='role:'
+                            placeholder='Role:'
                             onChange={(e) => setRole(e.target.value)}
                             required
                           />
@@ -453,78 +571,54 @@ export default function CandidateProfileSetting() {
                       <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                          location<span className='text-danger'>*</span>
+                            Location<span className='text-danger'>*</span>
                           </label>
                           <input
                             name='location'
                             id='location'
                             type='text'
                             className='form-control'
-                            placeholder='location:'
+                            placeholder='Location:'
                             onChange={(e) => setLocation(e.target.value)}
                             required
                           />
                         </div>
                       </div>
 
-
-                      
-
-                      <div className='col-md-6'>
-      <div className='mb-3'>
-        <label className='form-label fw-semibold'>
-        TimeLine  <span className='text-danger'>*</span>
-        </label>
-        <div className='d-flex'>
-          <input
-            type='number'
-            name='startYear'
-            className='form-control me-2'
-            placeholder='Start Year'
-            value={timeLine.startYear}
-            onChange={handleInputChange}
-            min='1900'
-            max={new Date().getFullYear()}
-            required
-          />
-          <input
-            type='number'
-            name='endYear'
-            className='form-control'
-            placeholder='End Year'
-            value={timeLine.endYear}
-            onChange={handleInputChange}
-            min='1900'
-            max={new Date().getFullYear()}
-            required
-          />
-        </div>
-      </div>
-    </div>
-
-
-                     <div className='col-md-6'>
-                        <div className='mb-3'>
-                          <label className='form-label fw-semibold'>
-                          salary<span className='text-danger'>*</span>
-                          </label>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          TimeLine <span className='text-danger'>*</span>
+                        </label>
+                        <div className='d-flex'>
                           <input
-                            name='salary'
-                            id='mobileNumber'
-                            type='text'
+                            type='number'
+                            name='startYear'
+                            className='form-control me-2'
+                            placeholder='Start Year'
+                            value={timeLine.startYear}
+                            onChange={handleInputChange}
+                            min='1900'
+                            max={new Date().getFullYear()}
+                            required
+                          />
+                          <input
+                            type='number'
+                            name='endYear'
                             className='form-control'
-                            placeholder='salary:'
-                            onChange={(e) => setSalary(e.target.value)}
+                            placeholder='End Year'
+                            value={timeLine.endYear}
+                            onChange={handleInputChange}
+                            min='1900'
+                            max={new Date().getFullYear()}
                             required
                           />
                         </div>
                       </div>
 
-
                       <div className='col-md-12'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                          description<span className='text-danger'>*</span>
+                            description<span className='text-danger'>*</span>
                           </label>
                           <textarea
                             name='description'
@@ -532,58 +626,77 @@ export default function CandidateProfileSetting() {
                             rows='3'
                             className='form-control'
                             placeholder='description'
-                            onChange={(e) =>setDescription(e.target.value)}
+                            onChange={(e) => setDescription(e.target.value)}
                             required
                           ></textarea>
                         </div>
                       </div>
                       <h5 className='mb-0'>Skills</h5>
-              {skills.map((skill, index) => (
-                <div key={index} className='row'>
-                  <div className='col-md-6'>
-                    <div className='mb-3'>
-                      <label className='form-label fw-semibold'>
-                        Title<span className='text-danger'>*</span>
-                      </label>
-                      <input
-                        name={`title-${index}`}
-                        type='text'
-                        className='form-control'
-                        placeholder='Title'
-                        value={skill.title}
-                        onChange={(e) => handleSkillChange(index, 'title', e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
+                      {skills.map((skill, index) => (
+                        <div key={index} className='row'>
+                          <div className='col-md-6'>
+                            <div className='mb-3'>
+                              <label className='form-label fw-semibold'>
+                                Title<span className='text-danger'>*</span>
+                              </label>
+                              <input
+                                name={`title-${index}`}
+                                type='text'
+                                className='form-control'
+                                placeholder='Title'
+                                value={skill.title}
+                                onChange={(e) =>
+                                  handleSkillChange(
+                                    index,
+                                    'title',
+                                    e.target.value,
+                                  )
+                                }
+                                required
+                              />
+                            </div>
+                          </div>
 
-                  <div className='col-md-6'>
-                    <div className='mb-3'>
-                      <label className='form-label fw-semibold'>
-                        Range<span className='text-danger'>*</span>
-                      </label>
-                      <input
-                        name={`range-${index}`}
-                        type='text'
-                        className='form-control'
-                        placeholder='Range'
-                        value={skill.range}
-                        onChange={(e) => handleSkillChange(index, 'range', e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className='col-md-12 text-end'>
-                    <button type='button' className='btn btn-danger' onClick={() => handleRemoveSkill(index)}>Remove</button>
-                  </div>
-                </div>
-              ))}
-              <div className='text-center'>
-                <button type='button' className='btn btn-secondary mt-2' onClick={handleAddSkill}>
-                  Add Skill
-                </button>
-              </div>
-                     
+                          <div className='col-md-6'>
+                            <div className='mb-3'>
+                              <label className='form-label fw-semibold'>
+                                Range<span className='text-danger'>*</span>
+                              </label>
+                              <input
+                                name={`range-${index}`}
+                                type='text'
+                                className='form-control'
+                                placeholder='Range'
+                                value={skill.range}
+                                onChange={(e) =>
+                                  handleSkillChange(
+                                    index,
+                                    'range',
+                                    e.target.value,
+                                  )
+                                }
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className='col-md-12 text-end'>
+                            <button
+                              type='button'
+                              className='bi bi-trash'
+                              id='trash'
+                              onClick={() => handleRemoveSkill(index)}
+                            ></button>
+                          </div>
+                        </div>
+                      ))}
+                      <div className='text-center'>
+                        <button
+                          type='button'
+                          id='plus'
+                          className='bi bi-plus'
+                          onClick={handleAddSkill}
+                        ></button>
+                      </div>
                     </div>
                     <div className='text-center'>
                       <button type='submit' className='btn btn-primary mt-2'>
@@ -591,10 +704,10 @@ export default function CandidateProfileSetting() {
                       </button>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </section>
       <Footer />

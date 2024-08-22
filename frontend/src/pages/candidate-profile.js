@@ -2,31 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
-import bg1 from "../assets/images/hero/bg5.jpg";
-import company1 from "../assets/images/company/linkedin.png";
-import company2 from "../assets/images/company/lenovo-logo.png";
-import pdf from "../assets/images/calvin-carlo-resume.pdf";
-import image1 from "../assets/images/team/01.jpg";
+
 
 import NavbarDark from "../components/navbarDark";
 import Footer from "../components/footer";
 import ScrollTop from "../components/scrollTop";
 
 import {
-  FiSettings,
   FiMail,
   FiGift,
   FiHome,
   FiMapPin,
   FiGlobe,
   FiPhone,
-  FiDribbble,
-  FiLinkedin,
-  FiFacebook,
-  FiInstagram,
-  FiTwitter,
+ 
   FiDownload,
-  FiMessageCircle,
   FiFileText
 } from "../assets/icons/vander";
 
@@ -72,9 +62,7 @@ export default function CandidateProfile() {
                       <p className="text-muted mb-0">{details.occupation}</p>
                     </div>
                   </div>
-                  <Link to="/candidate-profile-setting" className="btn btn-sm btn-icon btn-pills btn-soft-primary">
-                    <FiSettings className="icons" />
-                  </Link>
+                 
                 </div>
               </div>
             </div>
@@ -95,7 +83,7 @@ export default function CandidateProfile() {
                       <h6 className="font-weight-normal">{skill.title}</h6>
                       <div className="progress">
                         <div className="progress-bar position-relative bg-primary" style={{ width: skill.range }}>
-                          <div className="progress-value d-block text-dark h6">{skill.range}</div>
+                          <div className="progress-value d-block text-dark h6">{skill.range}%</div>
                         </div>
                       </div>
                     </div>
@@ -194,15 +182,8 @@ export default function CandidateProfile() {
                     <span className="fw-medium">{details.mobileNumber}</span>
                   </div>
                   <div className="d-flex align-items-center justify-content-between mt-3">
-                                    <span className="text-muted fw-medium">Social:</span>
                                     
-                                    <ul className="list-unstyled social-icon text-sm-end mb-0">
-                                        <li className="list-inline-item"><Link to="https://dribbble.com/shreethemes" target="_blank" className="rounded"><FiDribbble className="fea icon-sm align-middle"/></Link></li>
-                                        <li className="list-inline-item"><Link to="http://linkedin.com/company/shreethemes" target="_blank" className="rounded"><FiLinkedin className="fea icon-sm align-middle"/></Link></li>
-                                        <li className="list-inline-item"><Link to="https://www.facebook.com/shreethemes" target="_blank" className="rounded"><FiFacebook className="fea icon-sm align-middle"/></Link></li>
-                                        <li className="list-inline-item"><Link to="https://www.instagram.com/shreethemes/" target="_blank" className="rounded"><FiInstagram className="fea icon-sm align-middle"/></Link></li>
-                                        <li className="list-inline-item"><Link to="https://twitter.com/shreethemes" target="_blank" className="rounded"><FiTwitter className="fea icon-sm align-middle"/></Link></li>
-                                    </ul>
+                                    
                                 </div>
 
                                 <div className="p-3 rounded shadow bg-white mt-2">
