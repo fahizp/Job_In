@@ -231,15 +231,13 @@ export const deleteAccount = async (
 
   try {
     //deleting user from authmodel
-    const user = await authModel.findByIdAndDelete({_id:userId});
+    const user = await authModel.findByIdAndDelete({ _id: userId });
 
     //handling user not found situation
     if (!user) {
       return res.status(404).json('user not found');
     }
 
-    console.log("this is profile",user.profilePhoto);
-    
     // deleting profile photo from s3 bucket
     const params = {
       Bucket: bucketName,
@@ -252,7 +250,7 @@ export const deleteAccount = async (
     } catch (error) {
       console.error('Error deleting file:', error);
     }
-    
+
     //sending response
     return res.status(200).json('Account deleted ');
   } catch (error) {
