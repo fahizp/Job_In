@@ -41,7 +41,7 @@ export default function Contactinfo({ contactDetails }) {
       toast.success(
         response.data.message || 'Contact info updated successfully',
       );
-      setError(''); // Clear any previous errors
+      setError(''); 
     } catch (validationError) {
       if (validationError.name === 'ValidationError') {
         setError(validationError.errors[0]);
