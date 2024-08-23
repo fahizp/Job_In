@@ -20,11 +20,16 @@ export default function Login() {
     const { setUserId } = useContext(UserContext);
 
     useEffect(() => {
+        // const userId = localStorage.getItem('userId');
         const accessToken = localStorage.getItem('accessToken');
+        // if (userId) {
+        //     setUserId(userId);
+        // }
+
         if (accessToken) {
             navigate('/index');
         }
-    }, [navigate]);
+    }, [navigate, setUserId]);
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -53,8 +58,6 @@ export default function Login() {
             .catch(err => setPasswordError(err.message));
     }, [password]);
 
-   
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         setGeneralError(""); 
@@ -70,11 +73,14 @@ export default function Login() {
                 password,
             });
 
-            localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
-            setUserId(response.data.userId);
+            if (response.status === 201) {
+            const { ACCESS_TOKEN, userId } = response.data;
+            localStorage.setItem("accessToken", ACCESS_TOKEN);
+            localStorage.setItem("userId", userId);
+            setUserId(userId); 
             toast.success("Login successful!");
             navigate("/index");
-
+            } 
         } catch (error) {
             if (error.name === "ValidationError") {
                 if (error.errors.includes("Password must contain both letters and numbers")) {
@@ -95,10 +101,11 @@ export default function Login() {
                 token: credentialResponse.credential,
             });
 
-            localStorage.setItem("accessToken", response.data.accessToken);
-            localStorage.setItem("refreshToken", response.data.refreshToken);
+            const { accessToken, userId } = response.data;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("userId", userId);
+            setUserId(userId); // Update context with user ID
             toast.success("Login successful!");
-
             navigate('/index');
         } catch (error) {
             console.error("Google login failed:", error);

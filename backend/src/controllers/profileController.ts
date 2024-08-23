@@ -1,16 +1,14 @@
 import express from 'express';
 import authModel from '../models/authModel';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto'
 import { validationResult } from 'express-validator';
-import { profileInterface } from '../utils/typos';
+import { profileInterface, requestFile } from '../utils/typos';
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import nodemailer from 'nodemailer';
-const randomImageName = (bytes = 32)=>crypto.randomBytes(bytes).toString('hex')
 
 // Retrieve and cast environment variables for S3 bucket configuration
 const bucketName = process.env.BUCKET_NAME as string;
@@ -36,10 +34,10 @@ export const profileDetails = async (
   const userId = req.params.id;
 
   // taking username and location from req.body
-  const { username, location, occupation}: profileInterface = req.body;
+  const { username, occupation }: profileInterface = req.body;
 
   //Retrieve the uploaded file from the request object.
-  const profilePhoto = req.file;
+  const { profilePhoto, banner }: any = req.files;
 
   try {
     //checking name is exist
@@ -50,25 +48,46 @@ export const profileDetails = async (
       console.log('username already in use');
       return res.status(409).json({ messaage: 'username already exist' });
     }
-
     // Upload Profile Photo
-    const imageName = randomImageName();
-    const profilePhotoParams = {
-      Bucket: bucketName,
-      Key:imageName,
-      Body: profilePhoto?.buffer,
-      ContentType: profilePhoto?.mimetype,
-    };
+    let uploadProfilePhoto;
+    if (profilePhoto) {
+      const profilePhotoParams = {
+        Bucket: bucketName,
+        Key: `profile-photos/${profilePhoto[0].originalname}`,
+        Body: profilePhoto[0].buffer,
+        ContentType: profilePhoto[0].mimetype,
+      };
+      const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
+      uploadProfilePhoto = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`;
+      await s3.send(profilePhotoCommand);
+    } else {
+      uploadProfilePhoto =
+        'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg';
+    }
 
-    const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
-    await s3.send(profilePhotoCommand);
+    // Upload Banner
+    let uploadBanner;
+    if (banner) {
+      const bannerParams = {
+        Bucket: bucketName,
+        Key: `banners/${banner[0].originalname}`,
+        Body: banner[0].buffer,
+        ContentType: banner[0].mimetype,
+      };
+      uploadBanner = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`;
+      const bannerCommand = new PutObjectCommand(bannerParams);
+      await s3.send(bannerCommand);
+    } else {
+      uploadBanner =
+        'https://jobinproject.s3.ap-south-1.amazonaws.com/default+banner.jpeg';
+    }
 
     //updating user details
     const updateUserDetails = (await authModel.findByIdAndUpdate(userId, {
       name: username,
-      location,
       occupation,
-      profilePhoto: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${profilePhoto?.originalname}`,
+      profilePhoto: uploadProfilePhoto,
+      banner: uploadBanner,
     })) as string;
 
     //checking user
@@ -166,7 +185,7 @@ export const passwordReset = async (
     const resetPassword = await authModel.findByIdAndUpdate(
       userId,
       {
-        password:hashedpassword,
+        password: hashedpassword,
       },
       { new: true, runValidators: true },
     );
@@ -235,14 +254,14 @@ export const deleteAccount = async (
     //handling user not found situation
     if (!user) {
       return res.status(404).json('user not found');
-    }   
+    }
     //deleting profile photo from s3 bucket
-    const params = {
-      Bucket: bucketName,
-      Key: user.profilePhoto,
-    };
-    const command = new DeleteObjectCommand(params);
-    await s3.send(command);
+    // const params = {
+    //   Bucket: bucketName,
+    //   Key: user.profilePhoto,
+    // };
+    // const command = new DeleteObjectCommand(params);
+    // await s3.send(command);
 
     //sending response
     return res.status(200).json('Account deleted ');
@@ -251,3 +270,36 @@ export const deleteAccount = async (
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+//feteching profile details
+export const userDetails = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  //taking id from req.params
+  const userId = req.params.id;
+
+  try {
+    //fetching user from authmodel
+    const user = await authModel.findById(userId, {
+      name: 1,
+      profilePhoto: 1,
+      banner: 1,
+      occupation: 1,
+      mobile: 1,
+      website: 1,
+    });
+
+    //handling user not found situation
+    if (!user) {
+      return res.status(404).json('user not found');
+    }
+
+    //sending response
+    return res.status(200).json({ 'user details': user });
+  } catch (error) {
+    console.error('Internal server error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}

@@ -98,7 +98,7 @@ export const userLogin = async (
     }
 
     // password verificaiton
-    const verifyPassword = bcrypt.compare(password, user.password as string);
+    const verifyPassword = await bcrypt.compare(password, user.password as string);
     if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     }

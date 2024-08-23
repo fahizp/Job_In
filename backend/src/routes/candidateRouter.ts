@@ -19,7 +19,7 @@ router.post(
   .matches(/^\d{4}-\d{4}$/),
 
   body('totalExperience', 'Experience must be in the format "1 Year", where "1" can be any number.')
-  .matches(/^\d+ Year$/),
+  .matches(/^\d+ Year$/ ||/^\d+ Years$/),
 
   body('email', 'Email must end with @gmail.com')
   .matches(/@gmail\.com$/),
