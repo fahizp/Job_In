@@ -64,8 +64,7 @@ export default function Profile() {
         const response = await axios.get(`http://localhost:8001/profile/userdetail/${userId}`);
         console.log('Fetched user details:', response.data);
   
-        // Accessing the user details from the response
-        setUserDetails(response.data['user details']); // Correctly accessing the nested data
+        setUserDetails(response.data['user details']); 
        
       } catch (err) {
         console.error("Error fetching candidate details:", err);
