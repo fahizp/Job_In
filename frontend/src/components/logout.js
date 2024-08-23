@@ -8,6 +8,7 @@ const Logout = () => {
     useEffect(() => {
         const handleLogout = () => {
             localStorage.removeItem("accessToken");
+            localStorage.removeItem("userId");
             toast.success("Logged out successfully.");
             navigate("/");
         };
