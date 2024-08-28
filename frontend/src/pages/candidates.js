@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import bg1 from '../assets/images/hero/bg.jpg';
@@ -16,17 +16,20 @@ export default function Candidates() {
   useEffect(() => {
     const fetchCandidateProfile = async () => {
       try {
-        const response = await axios.get('http://localhost:8001/candidate/candidatelist', {
-          params: {
-            page: currentPage,
-            limit: itemsPerPage
-          }
-        });
+        const response = await axios.get(
+          'http://localhost:8001/candidate/candidatelist',
+          {
+            params: {
+              page: currentPage,
+              limit: itemsPerPage,
+            },
+          },
+        );
         setList(response.data.candidateList);
         setTotalPages(response.data.totalPages);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching candidate details:", err);
+        console.error('Error fetching candidate details:', err);
         setLoading(false);
       }
     };
@@ -110,15 +113,15 @@ export default function Candidates() {
                         </Link>
                         <p className='text-muted mt-1'>{item.occupation}</p>
                       </div>
-                  
+
                       {item.skills.map((skill, skillIndex) => (
-  <span
-    key={skillIndex}
-    className='badge bg-soft-primary rounded-pill'
-  >
-    {skill.title}
-  </span>
-))}
+                        <span
+                          key={skillIndex}
+                          className='badge bg-soft-primary rounded-pill'
+                        >
+                          {skill.title}
+                        </span>
+                      ))}
 
                       <div className='mt-2 d-flex align-items-center justify-content-between'>
                         <div className='text-center'>
@@ -129,7 +132,9 @@ export default function Candidates() {
                           <p className='text-muted fw-medium mb-0'>
                             Experience:
                           </p>
-                          <p className='mb-0 fw-medium'>{item.totalExperience}</p>
+                          <p className='mb-0 fw-medium'>
+                            {item.totalExperience}
+                          </p>
                         </div>
                       </div>
                       <div className='mt-3'>
@@ -163,8 +168,15 @@ export default function Candidates() {
                   </Link>
                 </li>
                 {[...Array(totalPages)].map((_, index) => (
-                  <li className={`page-item ${currentPage === index + 1 ? 'active' : ''}`} key={index}>
-                    <Link className='page-link' to='#' onClick={() => handlePageChange(index + 1)}>
+                  <li
+                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                    key={index}
+                  >
+                    <Link
+                      className='page-link'
+                      to='#'
+                      onClick={() => handlePageChange(index + 1)}
+                    >
                       {index + 1}
                     </Link>
                   </li>
