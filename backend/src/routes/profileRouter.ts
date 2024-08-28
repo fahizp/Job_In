@@ -17,7 +17,10 @@ const router = express.Router();
 //updating profile details and username validation
 router.post(
   '/updateDetails/:id',
-  upload.single('profilePhoto'),
+  upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
+  ]),
   body('username', 'Username should be minimum 6 characters').isLength({
     min: 6,
   }),
