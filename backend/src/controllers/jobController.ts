@@ -65,6 +65,8 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${cv?.originalname}`,
     });
 
+    await jobApply.save()
+
     //sending response
     return res
       .status(200)
@@ -78,27 +80,45 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
 // job list
 export const jobList = async (req: express.Request, res: express.Response) => {
   try {
-    // getting job list from job collection
+    const { page = 1, limit = 10 } = req.query;
+
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
+
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const totalCount = await jobPostModel.countDocuments();
+
     const jobList = await jobPostModel.aggregate([
       {
         $project: {
           title: 1,
           jobCategory: 1,
-          Country: 1,
+          country: 1,
           logo: 1,
           minSalary: 1,
           maxSalary: 1,
           postedDate: 1,
         },
       },
+      { $skip: skip },
+      { $limit: limitNumber },
     ]);
 
-    return res.status(200).json({ jobList: jobList });
+    const totalPages = Math.ceil(totalCount / limitNumber);
+
+    return res.status(200).json({
+      jobList,
+      totalPages,
+      currentPage: pageNumber,
+    });
   } catch (error) {
-    console.error('Error on fetching job list:', error);
+    console.error('Error fetching job list:', error);
     res.status(500).send('Internal server error');
   }
 };
+
+
 
 //job details
 export const jobDetails = async (
@@ -125,8 +145,9 @@ export const jobSearch = async (
 ) => {
   try {
     // taking search parameters from the request body
-    const { keywords, country, jobCategory } = req.body;
-
+    const keywords = req.query.keywords as string
+    const country = req.query.country as string
+    const jobCategory = req.query.jobCategory as string
     //array for aggregation stages
     const pipeline = [];
 
