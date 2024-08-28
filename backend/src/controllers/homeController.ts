@@ -9,7 +9,7 @@ export const homeSearch = async (
 ) => {
   try {
     // taking search parameters from the request body
-    const { keywords } = req.body;
+    const keywords = req.query.keywords as string
     //finding candidates using keyword
 
     if (keywords === '') {
@@ -25,7 +25,7 @@ export const homeSearch = async (
           profilePhoto: 1,
           totalExperience: 1,
         },
-      },
+      },{$limit:5}
     ]);
 
     //finding jobs using keyword and projecting fields.
@@ -35,13 +35,13 @@ export const homeSearch = async (
         $project: {
           title: 1,
           jobCategory: 1,
-          Country: 1,
+          country: 1,
           logo: 1,
           minSalary: 1,
           maxSalary: 1,
           postedDate: 1,
         },
-      },
+      },{$limit:5}
     ]);
 
     //checking jobs and candidate.
