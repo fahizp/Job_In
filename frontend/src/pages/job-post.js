@@ -1,12 +1,84 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
+import countryList from 'react-select-country-list';
+import Select from 'react-select';
 import bg1 from '../assets/images/hero/bg.jpg';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import ScrollTop from '../components/scrollTop';
 
 export default function JobPost() {
+  const [logo, setLogo] = useState(null);
+  const [title, setTitle] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [jobType, setJobType] = useState('');
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [address, setAddress] = useState('');
+  const [jobCategory, setJobCategory] = useState('');
+  const [minSalary, setMinSalary] = useState('');
+  const [maxSalary, setMaxSalary] = useState('');
+  const [experience, setExperience] = useState('');
+  const [qualification, setQualification] = useState('');
+  const [responsibilities, setResponsibilities] = useState('');
+  const [description, setDescription] = useState('');
+  const [requirements, setRequirements] = useState('');
+  const [postedDate, setPostedDate] = useState(new Date().toISOString().split('T')[0]);
+
+  const Submit = async (e) => {
+    e.preventDefault();
+    const countryName = country?.label || '';
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('companyName', companyName);
+    formData.append('jobType', jobType);
+    formData.append('country', countryName);
+    formData.append('state', state);
+    formData.append('address', address);
+    formData.append('jobCategory', jobCategory);
+    formData.append('minSalary', minSalary);
+    formData.append('maxSalary', maxSalary);
+    formData.append('experience', experience);
+    formData.append('qualification', qualification);
+    formData.append('responsibilities', responsibilities);
+    formData.append('description', description);
+    formData.append('requirements', requirements);
+    formData.append('postedDate', postedDate);
+
+    if (logo) {
+      formData.append('logo', logo);
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8001/job/jobpost',
+        formData
+      );
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const options = countryList().getData();
+
+  const changeHandler = (selectedOption) => {
+    setCountry(selectedOption);
+  };
+
+  const handleLogoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setLogo(file);
+    }
+  };
+
+  const handleDateChange = (e) => {
+    setPostedDate(e.target.value);
+  };
+
   return (
     <>
       <Navbar navClass='defaultscroll sticky' navLight={true} />
@@ -44,6 +116,7 @@ export default function JobPost() {
           </div>
         </div>
       </section>
+
       <div className='position-relative'>
         <div className='shape overflow-hidden text-white'>
           <svg
@@ -64,144 +137,81 @@ export default function JobPost() {
           <div className='row justify-content-center'>
             <div className='col-xl-7 col-lg-8'>
               <div className='card border-0'>
-                <form className='rounded shadow p-4'>
+                <form onSubmit={Submit} className='rounded shadow p-4'>
                   <div className='row'>
                     <h5 className='mb-3'>Job Details:</h5>
+
                     <div className='col-12'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
-                          Job Title :
+                          Job Title:
                         </label>
                         <input
-                          name='subject'
-                          id='subject2'
+                          name='title'
                           className='form-control'
-                          placeholder='Title :'
+                          placeholder='Title:'
+                          onChange={(e) => setTitle(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
+
                     <div className='col-12'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
-                          Description :
+                          Company Name:
+                        </label>
+                        <input
+                          name='companyName'
+                          className='form-control'
+                          placeholder='Company Name:'
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Upload Logo:
+                        </label>
+                        <input
+                          type='file'
+                          accept='image/*'
+                          className='form-control'
+                          onChange={handleLogoChange}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-12'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Description:
                         </label>
                         <textarea
-                          name='comments'
-                          id='comments2'
+                          name='description'
                           rows='4'
                           className='form-control'
-                          placeholder='Describe the job :'
+                          placeholder='Describe the job:'
+                          onChange={(e) => setDescription(e.target.value)}
+                          required
                         ></textarea>
                       </div>
                     </div>
+
                     <div className='col-md-6'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
                           Job Type:
                         </label>
-                        <select className='form-control form-select' id='Type'>
-                          <option value='WD'>Web Designer</option>
-                          <option value='WD'>Web Developer</option>
-                          <option value='UI'>UI / UX Desinger</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className='col-md-6'>
-                      <div className='mb-3'>
-                        <label className='form-label fw-semibold'>
-                          Job Categories:
-                        </label>
-                        <select
-                          className='form-control form-select'
-                          id='Categories'
-                        >
-                          <option>All Jobs</option>
-                          <option>Full Time</option>
-                          <option>Half Time</option>
-                          <option>Remote</option>
-                          <option>In Office</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className='col-md-6'>
-                      <div className='mb-3'>
-                        <label className='form-label fw-semibold'>
-                          Salary:
-                        </label>
-                        <select
-                          className='form-control form-select'
-                          id='Salary'
-                        >
-                          <option value='HOURL'>Hourly</option>
-                          <option value='MONTH'>Monthly</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className='col-md-3'>
-                      <div className='mb-3 mt-md-4 pt-md-1'>
-                        <label className='form-label small fw-bold d-none'></label>
-                        <div className='input-group mb-3'>
-                          <span
-                            className='input-group-text border'
-                            id='basic-addon1'
-                          >
-                            $
-                          </span>
-                          <input
-                            type='number'
-                            className='form-control'
-                            min='1'
-                            max='1000'
-                            placeholder='Min'
-                            id='MIn'
-                            aria-describedby='inputGroupPrepend'
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className='col-md-3'>
-                      <div className='mb-3 mt-md-4 pt-md-1'>
-                        <label className='form-label small fw-bold d-none'></label>
-                        <div className='input-group mb-3'>
-                          <span
-                            className='input-group-text border'
-                            id='basic-addon1'
-                          >
-                            $
-                          </span>
-                          <input
-                            type='number'
-                            className='form-control'
-                            min='1'
-                            max='1000'
-                            placeholder='Max'
-                            id='Max'
-                            aria-describedby='inputGroupPrepend'
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='row'>
-                    <h5 className='mb-3'>Skill & Experience:</h5>
-                    <div className='col-12'>
-                      <div className='mb-3'>
-                        <label className='form-label fw-semibold'>
-                          Skills:
-                        </label>
                         <input
-                          name='name'
-                          id='skills'
-                          type='text'
+                          name='jobType'
                           className='form-control'
-                          placeholder='Web Developer'
+                          placeholder='Job Type:'
+                          onChange={(e) => setJobType(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -209,14 +219,117 @@ export default function JobPost() {
                     <div className='col-md-6'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
-                          Qualifications:
+                          Job Category:
+                        </label>
+                        <select
+                          className='form-control form-select'
+                          onChange={(e) => setJobCategory(e.target.value)}
+                          required
+                        >
+                          <option value=''>Select Category</option>
+                          <option value='Full Time'>Full Time</option>
+                          <option value='Part Time'>Part Time</option>
+                          <option value='Remote'>Remote</option>
+                          <option value='In Office'>In Office</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Salary (Monthly):
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className='col-md-3'>
+                      <div className='mb-3'>
+                        <div className='input-group mb-3'>
+                          <span className='input-group-text'>$</span>
+                          <input
+                            type='number'
+                            className='form-control'
+                            min='1'
+                            placeholder='Min'
+                            onChange={(e) => setMinSalary(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='col-md-3'>
+                      <div className='mb-3'>
+                        <div className='input-group mb-3'>
+                          <span className='input-group-text'>$</span>
+                          <input
+                            type='number'
+                            className='form-control'
+                            min='1'
+                            placeholder='Max'
+                            onChange={(e) => setMaxSalary(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Country:
+                        </label>
+                        <Select
+                          options={options}
+                          value={country}
+                          onChange={changeHandler}
+                          placeholder='Select Country'
+                          isClearable
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          State:
                         </label>
                         <input
-                          name='name'
-                          id='Qualifications'
-                          type='text'
+                          name='state'
                           className='form-control'
-                          placeholder='Qualifications'
+                          placeholder='State:'
+                          onChange={(e) => setState(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Address:
+                        </label>
+                        <input
+                          name='address'
+                          className='form-control'
+                          placeholder='Address:'
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='col-md-6'>
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          Posted Date:
+                        </label>
+                        <input
+                          type='date'
+                          className='form-control'
+                          value={postedDate}
+                          onChange={handleDateChange}
+                          required
                         />
                       </div>
                     </div>
@@ -227,11 +340,11 @@ export default function JobPost() {
                           Experience:
                         </label>
                         <input
-                          name='name'
-                          id='Experience'
-                          type='text'
+                          name='experience'
                           className='form-control'
-                          placeholder='Experience'
+                          placeholder='Experience:'
+                          onChange={(e) => setExperience(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -239,88 +352,56 @@ export default function JobPost() {
                     <div className='col-md-6'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
-                          Industry:
-                        </label>
-                        <select
-                          className='form-control form-select'
-                          id='Industry'
-                        >
-                          <option value='BANK'>Banking</option>
-                          <option value='BIO'>Biotechnology</option>
-                          <option value='AVI'>Aviation</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='row'>
-                    <h5 className='mb-3'>Skill & Experience:</h5>
-                    <div className='col-12'>
-                      <div className='mb-3'>
-                        <label className='form-label fw-semibold'>
-                          Address:
+                          Qualification:
                         </label>
                         <input
-                          name='name'
-                          id='Address'
-                          type='text'
+                          name='qualification'
                           className='form-control'
-                          placeholder='Address'
+                          placeholder='Qualification:'
+                          onChange={(e) => setQualification(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
 
-                    <div className='col-md-6'>
+                    <div className='col-12'>
                       <div className='mb-3'>
                         <label className='form-label fw-semibold'>
-                          Country:
+                          Responsibilities:
                         </label>
-                        <select
-                          className='form-control form-select'
-                          id='Country'
-                        >
-                          <option value='USA'>USA</option>
-                          <option value='CAD'>Canada</option>
-                          <option value='CHINA'>China</option>
-                        </select>
+                        <textarea
+                          name='responsibilities'
+                          rows='4'
+                          className='form-control'
+                          placeholder='Job Responsibilities:'
+                          onChange={(e) => setResponsibilities(e.target.value)}
+                          required
+                        ></textarea>
                       </div>
                     </div>
 
-                    <div className='col-md-6'>
+                    <div className='col-12'>
                       <div className='mb-3'>
-                        <label className='form-label fw-semibold'>State:</label>
-                        <select className='form-control form-select' id='State'>
-                          <option value='CAL'>California</option>
-                          <option value='TEX'>Texas</option>
-                          <option value='FLOR'>Florida</option>
-                        </select>
+                        <label className='form-label fw-semibold'>
+                          Requirements:
+                        </label>
+                        <textarea
+                          name='requirements'
+                          rows='4'
+                          className='form-control'
+                          placeholder='Job Requirements:'
+                          onChange={(e) => setRequirements(e.target.value)}
+                          required
+                        ></textarea>
                       </div>
                     </div>
 
-                    <div className='col-12'>
-                      <div className='card map border-0 rounded mb-3'>
-                        <div className='card-body p-0'>
-                          <iframe
-                            src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39206.002432144705!2d-95.4973981212445!3d29.709510002925988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16de81f3ca5%3A0xf43e0b60ae539ac9!2sGerald+D.+Hines+Waterwall+Park!5e0!3m2!1sen!2sin!4v1566305861440!5m2!1sen!2sin'
-                            className='rounded'
-                            style={{ border: '0', height: '250px' }}
-                            allowFullScreen
-                            title='job_in'
-                          ></iframe>
-                        </div>
+                    <div className='col-lg-12'>
+                      <div className='d-grid'>
+                        <button type='submit' className='btn btn-primary'>
+                          Post a Job
+                        </button>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className='row'>
-                    <div className='col-12'>
-                      <input
-                        type='submit'
-                        id='submit2'
-                        name='send'
-                        className='submitBnt btn btn-primary'
-                        value='Post Now'
-                      />
                     </div>
                   </div>
                 </form>
@@ -329,7 +410,8 @@ export default function JobPost() {
           </div>
         </div>
       </section>
-      <Footer top={true} />
+
+      <Footer />
       <ScrollTop />
     </>
   );
