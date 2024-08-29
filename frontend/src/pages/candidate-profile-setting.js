@@ -67,6 +67,7 @@ export default function CandidateProfileSetting() {
     email: Yup.string()
       .email('Invalid email format')
       .required('Email is required'),
+      
   });
 
   const Submit = async (e) => {
