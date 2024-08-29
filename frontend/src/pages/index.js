@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+
+import React, { useState } from 'react';
+import { Link,useNavigate} from 'react-router-dom';
 
 import bg1 from '../assets/images/bg2.png';
 import hero1 from '../assets/images/hero1.png';
@@ -26,6 +27,18 @@ import { jobData } from '../data/data';
 import { FiSearch, FiClock, FiMapPin } from '../assets/icons/vander';
 
 export default function Index() {
+
+  const [query, setQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Navigate to the search page with the query
+    navigate(`/search?keywords=${encodeURIComponent(query)}`);
+  };
+
+
+  
   return (
     <>
       <Navbar navClass='defaultscroll sticky' />
@@ -48,7 +61,7 @@ export default function Index() {
                 </p>
 
                 <div className='text-center subscribe-form mt-4'>
-                  <form style={{ maxWidth: '800px' }}>
+                  <form style={{ maxWidth: '800px' }} onSubmit={handleSearch}>
                     <div className='mb-0'>
                       <div className='position-relative'>
                         <FiSearch className='fea icon-20 position-absolute top-50 start-0 translate-middle-y ms-3' />
@@ -58,6 +71,8 @@ export default function Index() {
                           name='name'
                           className='shadow rounded-pill bg-white ps-5'
                           required=''
+                          value={query}
+        onChange={(e) => setQuery(e.target.value)}
                           placeholder='Search jobs & candidates ...'
                         />
                       </div>
@@ -143,3 +158,11 @@ export default function Index() {
     </>
   );
 }
+
+
+
+
+
+
+
+

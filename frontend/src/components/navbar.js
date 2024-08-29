@@ -100,8 +100,8 @@ export default function Navbar({ navClass, navLight }) {
                 <Link to='/candidate-profile-setting' className='dropdown-item fw-medium fs-6'>
                   Candidate Post
                 </Link>
-                <Link to='/job-apply' className='dropdown-item fw-medium fs-6'>
-                  Job Apply
+                <Link to='/job-post' className='dropdown-item fw-medium fs-6'>
+                  Job post
                 </Link>
                 <Link to='/Logout' className='dropdown-item fw-medium fs-6'>
                   Logout

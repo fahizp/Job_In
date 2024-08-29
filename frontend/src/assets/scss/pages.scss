@@ -56,3 +56,29 @@ margin-top: 10px;
   .web span{
     color: #000;
   }
+
+.view-all-link {
+  color: #007BFF;
+  font-size: 14px; 
+  text-decoration: none;
+  font-weight: bold; 
+  display: flex;
+  align-items: center;
+  float: right;
+
+}
+
+.view-all-link:hover {
+  color: #0056b3;
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+  margin-left: 5px; 
+}
+
+.view-all-link:hover .arrow-icon {
+  transform: translateX(5px); 
+}
+
+

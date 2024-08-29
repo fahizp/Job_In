@@ -65,6 +65,7 @@ export default function Profile() {
         console.log('Fetched user details:', response.data);
   
         setUserDetails(response.data['user details']); 
+
        
       } catch (err) {
         console.error("Error fetching candidate details:", err);
@@ -81,7 +82,7 @@ export default function Profile() {
           <div className='row'>
             <div className='col-12'>
               <div className='position-relative'>
-                <div className='candidate-cover'>
+                <div className='candidate-cover'>  
                   <div className='profile-banner relative text-transparent'>
                     <input
                       id='pro-banner'

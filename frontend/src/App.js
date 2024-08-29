@@ -33,6 +33,7 @@ import Maintenance from './pages/maintenance';
 import Logout from './components/logout';
 import Profile from './pages/profile';
 import { UserProvider } from '../src/context/UserContext';
+import SearchResults from './pages/SearchResults';
 
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
         <Route path='/index' element={<Index />} />
 
         <Route path='/job-list-one' element={<JobListOne />} />
-        <Route path='/job-apply' element={<JobApply />} />
+        <Route path='/job-apply/:id' element={<JobApply />} />
         <Route path='/job-post' element={<JobPost />} />
 
         <Route path='/job-detail-one' element={<JobDetailOne />} />
@@ -59,6 +60,7 @@ function App() {
           path='/candidate-profile-setting'
           element={<CandidateProfileSetting />}
         />
+                <Route path='/search' element={<SearchResults/>} />
         <Route path='/aboutus' element={<AboutUs />} />
         <Route path='/services' element={<Services />} />
         <Route path='/helpcenter-overview' element={<HelpcenterOverview />} />
