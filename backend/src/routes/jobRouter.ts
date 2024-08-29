@@ -8,6 +8,7 @@ import {
   jobPost,
   jobSearch,
 } from '../controllers/jobController';
+import { tokenVerification } from '../middleWare/tokenVerification';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -26,7 +27,7 @@ router.post(
 );
 
 //job list
-router.get('/joblist', jobList);
+router.get('/joblist/:id',tokenVerification,jobList);
 
 //job details
 router.get('/jobdetails/:id', jobDetails);
