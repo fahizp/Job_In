@@ -7,7 +7,7 @@ import AboutTwo from "../components/aboutTwo";
 import FormSelect from "../components/formSelect";
 import Footer from "../components/footer";
 import ScrollTop from "../components/scrollTop";
-import { FiClock, FiMapPin, FiBookmark } from "../assets/icons/vander";
+import { FiClock, FiMapPin } from "../assets/icons/vander";
 
 const daysAgo = (dateString) => {
   const postedDate = new Date(dateString);
@@ -20,12 +20,18 @@ const daysAgo = (dateString) => {
 export default function JobListOne() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const fetchJobList = async () => {
+    const fetchJobList = async (page) => {
+      setLoading(true);
       try {
-        const response = await axios.get("http://localhost:8001/job/joblist");
-        setList(response.data.jobList);
+        const response = await axios.get(`http://localhost:8001/job/joblist`, {
+          params: { page }
+        });
+        setList(response.data.alljobs);
+        setTotalPages(response.data.totalPages);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching job list:", err);
@@ -33,11 +39,11 @@ export default function JobListOne() {
       }
     };
 
-    fetchJobList();
-  }, []);
+    fetchJobList(currentPage);
+  }, [currentPage]);
 
-  const handleSearch = (filtered) => {
-    setList(filtered);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -83,7 +89,7 @@ export default function JobListOne() {
             <div className="col-12 mt-4">
               <div className="features-absolute">
                 <div className="d-md-flex justify-content-between align-items-center bg-white shadow rounded p-4">
-                  <FormSelect setFilteredJobs={handleSearch} />
+                  <FormSelect setFilteredJobs={(filtered) => setList(filtered)} />
                 </div>
               </div>
             </div>
@@ -92,7 +98,7 @@ export default function JobListOne() {
 
         <div className="container mt-60">
           <div className="row g-4">
-          {loading ? (
+            {loading ? (
               <p>Loading...</p>
             ) : (
               list.map((item, index) => (
@@ -135,7 +141,6 @@ export default function JobListOne() {
                     </div>
 
                     <div className="mt-3 mt-md-0">
-               
                       <Link
                         to={`/job-detail-one/${item._id}`}
                         className="btn btn-sm btn-primary w-full ms-md-1"
@@ -146,7 +151,48 @@ export default function JobListOne() {
                   </div>
                 </div>
               ))
-            ) }
+            )}
+          </div>
+          <div className="row">
+            <div className="col-12 mt-4 pt-2">
+              <ul className="pagination justify-content-center mb-0">
+                <li className="page-item">
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <span aria-hidden="true">
+                      <i className="mdi mdi-chevron-left fs-6"></i>
+                    </span>
+                  </button>
+                </li>
+                {[...Array(totalPages)].map((_, index) => (
+                  <li
+                    className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                    key={index}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  </li>
+                ))}
+                <li className="page-item">
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <span aria-hidden="true">
+                      <i className="mdi mdi-chevron-right fs-6"></i>
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 

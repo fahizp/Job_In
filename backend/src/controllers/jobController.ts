@@ -1,8 +1,14 @@
 import express from 'express';
+import { ObjectId } from 'mongodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { jobInterface, MatchStage } from '../utils/typos';
-import { jobApplyModel, jobPostModel } from '../models/jobModel';
+import {
+  // appliedJobModel,
+  jobApplyModel,
+  jobPostModel,
+} from '../models/jobModel';
 import { validationResult } from 'express-validator';
+import authModel from '../models/authModel';
 
 //job apply
 export const jobApply = async (req: express.Request, res: express.Response) => {
@@ -21,17 +27,16 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
     region: bucketRegion,
   });
   // taking id from req.params
-  const userId = req.params.id;
+  const { userId, jobId } = req.params;
 
+  //checking user exist
+  const userExist = await authModel.findById(userId);
+  if (!userExist) {
+    return res.status(200).json("user doesn't exist");
+  }
   // taking username and location from req.body
-  const {
-    name,
-    email,
-    description,
-    phoneNumber,
-    jobTitle,
-    typesOfJobs,
-  }: jobInterface = req.body;
+  const { name, email, coverLetter, phoneNumber, experience }: jobInterface =
+    req.body;
 
   //Retrieve the uploaded file from the request object.
   const cv = req.file;
@@ -58,11 +63,19 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
     const jobApply = new jobApplyModel({
       name,
       email,
-      description,
+      coverLetter,
       phoneNumber,
-      jobTitle,
-      typesOfJobs,
+      experience,
       cv: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${cv?.originalname}`,
+      userId,
+      jobId,
+    });
+    //saving job apply
+    await jobApply.save();
+
+    // storing userId to  appliedUsersId field in jobPostModel
+    const jobDetails = await jobPostModel.findByIdAndUpdate(jobId, {
+      $push: { appliedUsersId: userId },
     });
 
     await jobApply.save()
@@ -80,6 +93,49 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
 // job list
 export const jobList = async (req: express.Request, res: express.Response) => {
   try {
+
+
+     const userId = req.query.id
+ 
+     //fetching jobs
+     const jobsList = await jobPostModel.find();
+ 
+     // Initialize an empty array named 'alljobs' to store job-related data
+     let alljobs = [];
+ 
+     //set forloop for jobs collection
+     for (let i = 0; i < jobsList.length; i++) {
+       //take userId into users
+       let users = jobsList[i].appliedUsersId;
+ 
+       //set forloop for userd Id
+       for (let j = 0; j <= users.length; j++) {
+         //checking userId and job
+         if (userId == users[j]) {
+           //adding new field to job[i] object and set status to true
+           jobsList[i].status = 'true';
+ 
+           //add job to alljobs array
+           alljobs.push(jobsList[i]);
+           break;
+         } else {
+           //adding new field to job[i] object and set status  to false
+           jobsList[i].status = 'false';
+           //add job to alljobs array
+           alljobs.push(jobsList[i]);
+         }
+       }
+     }
+
+
+
+
+
+
+
+
+
+
     const { page = 1, limit = 10 } = req.query;
 
     const pageNumber = parseInt(page as string, 10);
@@ -89,29 +145,18 @@ export const jobList = async (req: express.Request, res: express.Response) => {
 
     const totalCount = await jobPostModel.countDocuments();
 
-    const jobList = await jobPostModel.aggregate([
-      {
-        $project: {
-          title: 1,
-          jobCategory: 1,
-          country: 1,
-          logo: 1,
-          minSalary: 1,
-          maxSalary: 1,
-          postedDate: 1,
-        },
-      },
-      { $skip: skip },
-      { $limit: limitNumber },
-    ]);
+   
 
     const totalPages = Math.ceil(totalCount / limitNumber);
 
     return res.status(200).json({
-      jobList,
+      alljobs,
       totalPages,
       currentPage: pageNumber,
     });
+    //
+   
+
   } catch (error) {
     console.error('Error fetching job list:', error);
     res.status(500).send('Internal server error');
@@ -126,11 +171,11 @@ export const jobDetails = async (
   res: express.Response,
 ) => {
   // taking id from req.params
-  const userId = req.params.id;
+  const jobId = req.params.id;
 
   try {
     //fetching job details
-    const jobDetails = await jobPostModel.findById(userId);
+    const jobDetails = await jobPostModel.findById(jobId);
     return res.status(200).json({ jobDetails: jobDetails });
   } catch (error) {
     console.error('Error on fetching job details:', error);
@@ -291,6 +336,7 @@ export const jobPost = async (req: express.Request, res: express.Response) => {
       Requireds,
       address,
       logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${logo?.originalname}`,
+      status: false,
     });
 
     //saving new candidate

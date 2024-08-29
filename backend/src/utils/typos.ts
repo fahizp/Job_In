@@ -81,6 +81,8 @@ export interface jobInterface {
   state:string;
   address:string;
   logo:string;
+  coverLetter:string;
+  
 }
 
 

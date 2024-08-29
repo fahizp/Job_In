@@ -5,6 +5,8 @@ import {
   logout,
   protect,
   refreshingToken,
+  forgetPassword,
+  passwordReset,
 } from '../controllers/authController';
 import { tokenVerification } from '../middleWare/tokenVerification';
 import { body } from 'express-validator';
@@ -37,5 +39,18 @@ router.post('/logout', logout);
 router.get('/protected', tokenVerification, protect);
 router.post('/refreshtoken', refreshingToken);
 router.post('/google',googleAuth );
+router.post('/forgetpassword',forgetPassword)
+
+// reset password and  password validation
+router.post(
+  '/passwordreset/:id/:token',
+  body(
+    'newPassword',
+    'Password should contain at least 5 alphanumeric characters.',
+  )
+    .isLength({ min: 5 })
+    .isAlphanumeric(),
+  passwordReset,
+);
 
 export default router;

@@ -9,11 +9,15 @@ const userTokenSchema = new Schema({
     type: String,
     require: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    expires: 30 * 86400, //30 days
-  },
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  //   expires: 30 * 86400, //30 days
+  // },
+  expiresAt:{
+    type:Date,
+    required:true
+  }
 });
 
 const userTokenModel = mongoose.model('UserToken', userTokenSchema);

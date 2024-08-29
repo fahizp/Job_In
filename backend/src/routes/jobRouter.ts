@@ -15,7 +15,7 @@ const router = express.Router();
 
 // job apply and email validation
 router.post(
-  '/jobapply/:id',
+  '/jobapply/:jobId/:userId',
   upload.single('cv'),
   body('email')
     .isEmail()
@@ -35,6 +35,6 @@ router.get('/jobdetails/:id', jobDetails);
 router.get('/jobsearch', jobSearch);
 
 //job post
-router.post('/jobpost', upload.single('logo'),jobPost)
+router.post('/jobpost', upload.single('logo'), jobPost);
 
 export default router;
