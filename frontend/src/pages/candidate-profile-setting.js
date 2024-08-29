@@ -586,138 +586,126 @@ export default function CandidateProfileSetting() {
                       </div>
                     </div>
 
-                    <div className='roww'>
-                      <h5>Experience :</h5>
-                      {skills.map((exp, index) => (
-                        <div key={index} className='row'>
-                        <div className='col-md-6'>
-                          <div className='mb-3'>
-                            <label className='form-label fw-semibold'>
-                              Upload Logo<span className='text-danger'>*</span>
-                            </label>
-                            <input
-                              type='file'
-                              accept='image/*'
-                              className='form-control'
-                              onChange={handleLogoChange}
-                            />
-                          </div>
-                        </div>
-                        <div className='col-md-6'>
-                          <div className='mb-3'>
-                            <label className='form-label fw-semibold'>
-                              companyName<span className='text-danger'>*</span>
-                            </label>
-                            <input
-                              name='companyName'
-                              id='companyName'
-                              type='text'
-                              className='form-control'
-                              placeholder='companyName:'
-                              onChange={(e) => setCompanyName(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className='col-md-6'>
-                          <div className='mb-3'>
-                            <label className='form-label fw-semibold'>
-                              Rol<span className='text-danger'>*</span>
-                            </label>
-                            <input
-                              name='role'
-                              id='role'
-                              type='text'
-                              className='form-control'
-                              placeholder='Role:'
-                              onChange={(e) => setRole(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        <div className='col-md-6'>
-                          <div className='mb-3'>
-                            <label className='form-label fw-semibold'>
-                              Location<span className='text-danger'>*</span>
-                            </label>
-                            <input
-                              name='location'
-                              id='location'
-                              type='text'
-                              className='form-control'
-                              placeholder='Location:'
-                              onChange={(e) => setLocation(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
-
+                    <h5>Experience :</h5>
+                    <div className='row'>
+                      <div className='col-md-6'>
                         <div className='mb-3'>
                           <label className='form-label fw-semibold'>
-                            TimeLine <span className='text-danger'>*</span>
+                            Upload Logo<span className='text-danger'>*</span>
                           </label>
-                          <div className='d-flex'>
-                            <input
-                              type='number'
-                              name='startYear'
-                              className='form-control me-2'
-                              placeholder='Start Year'
-                              value={timeLine.startYear}
-                              onChange={handleInputChange}
-                              min='1900'
-                              max={new Date().getFullYear()}
-                              required
-                            />
-                            <input
-                              type='number'
-                              name='endYear'
-                              className='form-control'
-                              placeholder='End Year'
-                              value={timeLine.endYear}
-                              onChange={handleInputChange}
-                              min='1900'
-                              max={new Date().getFullYear()}
-                              required
-                            />
-                          </div>
+                          <input
+                            type='file'
+                            accept='image/*'
+                            className='form-control'
+                            onChange={handleLogoChange}
+                          />
                         </div>
-
-                        <div className='col-md-12'>
-                          <div className='mb-3'>
-                            <label className='form-label fw-semibold'>
-                              description<span className='text-danger'>*</span>
-                            </label>
-                            <textarea
-                              name='description'
-                              id='description'
-                              rows='3'
-                              className='form-control'
-                              placeholder='description'
-                              onChange={(e) => {
-                                setDescription(e.target.value);
-                                handleValidation(e.target.value, 'description');
-                              }}
-                              required
-                            ></textarea>
-                            {descriptionError && (
-                              <div className='text-danger'>
-                                {descriptionError}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className='col-md-12 text-end'>
-                            <button
-                              type='button'
-                              className='bi bi-trash'
-                              id='trash'
-                              onClick={() => handleRemoveexp(index)}
-                            ></button>
-                          </div>
                       </div>
-                      ))}
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            companyName<span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            name='companyName'
+                            id='companyName'
+                            type='text'
+                            className='form-control'
+                            placeholder='companyName:'
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            Rol<span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            name='role'
+                            id='role'
+                            type='text'
+                            className='form-control'
+                            placeholder='Role:'
+                            onChange={(e) => setRole(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
 
+                      <div className='col-md-6'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            Location<span className='text-danger'>*</span>
+                          </label>
+                          <input
+                            name='location'
+                            id='location'
+                            type='text'
+                            className='form-control'
+                            placeholder='Location:'
+                            onChange={(e) => setLocation(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className='mb-3'>
+                        <label className='form-label fw-semibold'>
+                          TimeLine <span className='text-danger'>*</span>
+                        </label>
+                        <div className='d-flex'>
+                          <input
+                            type='number'
+                            name='startYear'
+                            className='form-control me-2'
+                            placeholder='Start Year'
+                            value={timeLine.startYear}
+                            onChange={handleInputChange}
+                            min='1900'
+                            max={new Date().getFullYear()}
+                            required
+                          />
+                          <input
+                            type='number'
+                            name='endYear'
+                            className='form-control'
+                            placeholder='End Year'
+                            value={timeLine.endYear}
+                            onChange={handleInputChange}
+                            min='1900'
+                            max={new Date().getFullYear()}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className='col-md-12'>
+                        <div className='mb-3'>
+                          <label className='form-label fw-semibold'>
+                            description<span className='text-danger'>*</span>
+                          </label>
+                          <textarea
+                            name='description'
+                            id='description'
+                            rows='3'
+                            className='form-control'
+                            placeholder='description'
+                            onChange={(e) => {
+                              setDescription(e.target.value);
+                              handleValidation(e.target.value, 'description');
+                            }}
+                            required
+                          ></textarea>
+                          {descriptionError && (
+                            <div className='text-danger'>
+                              {descriptionError}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div></div>
                       <h5 className='mb-0'>Skills</h5>
                       {skills.map((skill, index) => (
                         <div key={index} className='row'>
