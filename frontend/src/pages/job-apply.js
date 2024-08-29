@@ -1,4 +1,4 @@
-import React, { useState,useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import PhoneInput from 'react-phone-input-2';
@@ -19,11 +19,19 @@ export default function JobApply() {
   const [description, setDescription] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cv, setCv] = useState(null);
+  const [error, setError] = useState(''); // New state for error handling
   let { id } = useParams();
   const { userId } = useContext(UserContext);
 
   const Submit = async (e) => {
     e.preventDefault();
+  
+    if (description.length > 220) {
+      setError('Description must not exceed 220 characters');
+      return;
+    } else {
+      setError(''); // Clear error if validation passes
+    }
   
     const data = new FormData();
     data.append('name', name);
@@ -55,6 +63,7 @@ export default function JobApply() {
       setCv(file);
     }
   };
+
   return (
     <>
       <Navbar navClass='defaultscroll sticky' navLight={true} />
@@ -116,7 +125,7 @@ export default function JobApply() {
           <div className='row justify-content-center'>
             <div className='col-lg-7 col-md-7'>
               <div className='card border-0'>
-                <form  onSubmit={Submit} className='rounded shadow p-4'>
+                <form onSubmit={Submit} className='rounded shadow p-4'>
                   <div className='row'>
                     <div className='col-12'>
                       <div className='mb-3'>
@@ -130,7 +139,6 @@ export default function JobApply() {
                           className='form-control'
                           placeholder='First Name :'
                           onChange={(e) => setName(e.target.value)}
-
                         />
                       </div>
                     </div>
@@ -146,7 +154,6 @@ export default function JobApply() {
                           className='form-control'
                           placeholder='Your email :'
                           onChange={(e) => setEmail(e.target.value)}
-
                         />
                       </div>
                     </div>
@@ -155,23 +162,19 @@ export default function JobApply() {
                         <label className='form-label fw-semibold'>
                           Your Phone no. :<span className='text-danger'>*</span>
                         </label>
-                    
 
                         <PhoneInput
-                        id='phon'
-  country={'eg'}
-  className='form-control'
-  
-  enableSearch={true}
-  value={phoneNumber}
-  onChange={(e) => setPhoneNumber(e)}
-  inputStyle={{
-    width: '100%',
-    height: '50px',
-  }}
-/>
-
-
+                          id='phon'
+                          country={'eg'}
+                          className='form-control'
+                          enableSearch={true}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e)}
+                          inputStyle={{
+                            width: '100%',
+                            height: '50px',
+                          }}
+                        />
                       </div>
                     </div>
                     <div className='col-12'>
@@ -197,7 +200,6 @@ export default function JobApply() {
                           className='form-control form-select'
                           id='Sortbylist-Shop'
                           onChange={(e) => setTypesOfJobs(e.target.value)}
-
                         >
                           <option>All Jobs</option>
                           <option>Full Time</option>
@@ -220,6 +222,9 @@ export default function JobApply() {
                           placeholder='Describe the job :'
                           onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
+                        {error && (
+                          <div className='text-danger mt-2'>{error}</div>
+                        )}
                       </div>
                     </div>
                     <div className='col-12'>
@@ -252,23 +257,23 @@ export default function JobApply() {
                             htmlFor='flexCheckDefault'
                           >
                             I Accept{' '}
-                            <Link to='#' className='text-primary'>
-                              Terms And Condition
+                            <Link
+                              to='#'
+                              className='text-primary fw-semibold'
+                            >
+                              Terms and Conditions
                             </Link>
                           </label>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className='row'>
-                    <div className='col-12'>
-                      <input
+                    <div className='col-12 text-center'>
+                      <button
                         type='submit'
-                        id='submit2'
-                        name='send'
-                        className='submitBnt btn btn-primary'
-                        value='Apply Now'
-                      />
+                        className='btn btn-primary'
+                      >
+                        Apply Now
+                      </button>
                     </div>
                   </div>
                 </form>
@@ -277,7 +282,8 @@ export default function JobApply() {
           </div>
         </div>
       </section>
-      <Footer top={true} />
+
+      <Footer />
       <ScrollTop />
     </>
   );
