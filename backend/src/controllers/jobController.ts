@@ -99,8 +99,8 @@ export const jobList = async (req: express.Request, res: express.Response) => {
     const limitNumber = parseInt(limit as string, 10);
 
     const skip = (pageNumber - 1) * limitNumber;
-     const userId = req.query.id
- 
+     const{userId}= req.query
+ console.log(userId)
      //fetching jobs
      const jobsList = await jobPostModel.find().skip(skip).limit(limitNumber);
  
