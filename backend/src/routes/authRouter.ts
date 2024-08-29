@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  body('name', 'Username should be minimum 6 characters').isLength({ min: 6 }),
+  body('name', 'Username should be minimum 3 characters').isLength({ min: 3 }),
 
   body('email')
     .isEmail()
