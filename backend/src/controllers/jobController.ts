@@ -94,11 +94,15 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
 export const jobList = async (req: express.Request, res: express.Response) => {
   try {
 
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
 
+    const skip = (pageNumber - 1) * limitNumber;
      const userId = req.query.id
  
      //fetching jobs
-     const jobsList = await jobPostModel.find();
+     const jobsList = await jobPostModel.find().skip(skip).limit(limitNumber);
  
      // Initialize an empty array named 'alljobs' to store job-related data
      let alljobs = [];
@@ -127,32 +131,14 @@ export const jobList = async (req: express.Request, res: express.Response) => {
        }
      }
 
-
-
-
-
-
-
-
-
-
-    const { page = 1, limit = 10 } = req.query;
-
-    const pageNumber = parseInt(page as string, 10);
-    const limitNumber = parseInt(limit as string, 10);
-
-    const skip = (pageNumber - 1) * limitNumber;
-
-    const totalCount = await jobPostModel.countDocuments();
-
-   
-
-    const totalPages = Math.ceil(totalCount / limitNumber);
+     const totalCount = await jobPostModel.countDocuments();
+     const totalPages = Math.ceil(totalCount / limitNumber);
 
     return res.status(200).json({
       alljobs,
       totalPages,
       currentPage: pageNumber,
+    
     });
     //
    
