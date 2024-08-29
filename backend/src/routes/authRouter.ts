@@ -3,7 +3,6 @@ import {
   userSignUp,
   userLogin,
   logout,
-  protect,
   refreshingToken,
   forgetPassword,
   passwordReset,
@@ -35,8 +34,7 @@ router.post(
 );
 
 router.post('/login', userLogin);
-router.post('/logout', logout);
-router.get('/protected', tokenVerification, protect);
+router.post('/logoutgit',tokenVerification,logout);
 router.post('/refreshtoken', refreshingToken);
 router.post('/google',googleAuth );
 router.post('/forgetpassword',forgetPassword)
