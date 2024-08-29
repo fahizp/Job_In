@@ -4,8 +4,10 @@ import jwt from 'jsonwebtoken';
 import authModel from '../models/authModel';
 import userTokenModel from '../models/userToken';
 import { validationResult } from 'express-validator';
-import { UserSignUpInterface } from '../utils/typos';
+import { profileInterface, UserSignUpInterface } from '../utils/typos';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 dotenv.config();
 
 // userSignUp
@@ -34,7 +36,7 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId:"",
+      googleId: '',
     });
 
     // saving newUser
@@ -97,11 +99,13 @@ export const userLogin = async (
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log("this is user",user.password);
-    
+    console.log('this is user', user.password);
 
     // password verificaiton
-    const verifyPassword = await bcrypt.compare(password, user.password as string);
+    const verifyPassword = await bcrypt.compare(
+      password,
+      user.password as string,
+    );
     if (!verifyPassword) {
       return res.status(401).json({ message: 'Invalid password' });
     }
@@ -197,5 +201,120 @@ export const logout = async (req: express.Request, res: express.Response) => {
   } catch (error) {
     console.error('Internal server error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// forget paassword
+export const forgetPassword = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  try {
+    // extracting email from req.body
+    const { email } = req.body;
+
+    //checking user
+    const user = await authModel.findOne({ email: email });
+    //handling user not found
+    if (!user) {
+      return res.status(409).json('Email not exist');
+    }
+
+    // taking token
+    let token = await userTokenModel.findOne({ email: email });
+    if (!token) {
+      token = await new userTokenModel({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString('hex'),
+        expiresAt: new Date(Date.now() + 2 * 60 * 1000),
+      }).save();
+    }
+
+    //creating link to reset password
+    const url = `http://localhost:${process.env.PORT}/password-reset/${user._id}/${token.token}`;
+
+    // Create a transporter object using the nodemailer module
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      // Authentication credentials for the email account
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.APP_PASSWORD,
+      },
+    });
+
+    const trialEmial = 'akgk75772@gmail.com';
+    // Send an email using the transporter object
+    const info = await transporter.sendMail({
+      //name and address of the sender
+      from: process.env.EMAIL,
+      // to email taken from env
+      to: trialEmial,
+      //subject of the email
+      subject: 'Password reset',
+      //content of the email
+      text: url,
+    });
+    return res.status(200).json({ message: 'Email sent successfully', info });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send email', error });
+  }
+};
+
+//reset password
+export const passwordReset = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  //handling validation error
+  const err = validationResult(req);
+  if (!err.isEmpty()) {
+    return res.status(400).json({ errors: err.array() });
+  }
+  //taking id from req.params
+  const { id, token } = req.params;
+  // taking old password , new password and conformPassword from req.body
+  const { newPassword, conformPassword }: profileInterface = req.body;
+
+  try {
+    // taking token
+    let tokenExist = await userTokenModel.findOne({ token: token });
+    //token validation
+    if (tokenExist && tokenExist.expiresAt > new Date()) {
+      console.log('token is valid');
+    } else {
+      await userTokenModel.deleteOne({ token: token });
+      return res.status(400).json('token expired');
+    }
+
+    // Check if the new password and confirm password are the same
+    if (newPassword === conformPassword) {
+      console.log({ message: 'newPassword and conformPassword is equal' });
+    } else {
+      return res.status(401).json({ message: 'check new password' });
+    }
+    //hashing new password
+    const hashedpassword = await bcrypt.hash(newPassword, 10);
+    //updating new password in authmodel
+    const resetPassword = await authModel.findByIdAndUpdate(
+      id,
+      {
+        password: hashedpassword,
+      },
+      { new: true, runValidators: true },
+    );
+    //delete token after reseting password
+    if (tokenExist) {
+      await userTokenModel.deleteOne({ token: token });
+    }
+
+    // Check if the document was not found (resetPassword is null or undefined)
+    if (!resetPassword) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    //sending response
+    return res.status(200).json('Passwowrd reset successful');
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
