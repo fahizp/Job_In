@@ -1,8 +1,10 @@
 import express from 'express';
 import candidateModel from '../models/canididateModel';
-import { CandidateInterface } from '../utils/typos';
+import { CandidateInterface, profileInterface } from '../utils/typos';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { validationResult } from 'express-validator';
+import nodemailer from 'nodemailer';
+
 
 // candidate Post
 export const candidatePost = async (
@@ -228,3 +230,48 @@ export const candidateDetails = async (req: express.Request, res: express.Respon
       res.status(500).json(err);
     }
 };
+
+//get in touch 
+export const getInTouch = async (req: express.Request, res: express.Response) => {
+  // taking yourname,email,subject,message from req.body
+  const { yourname, email, subject, message }: profileInterface = req.body;
+
+  //extracting id from params
+  const id = req.params.id;
+
+  try {
+    // email validation 
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      return res.status(400).json({ errors: err.array() });
+    }
+
+    //taking candidate by id
+    const candidate = await candidateModel.findById({_id:id})
+    
+    // Create a transporter object using the nodemailer module
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      // Authentication credentials for the email account
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.APP_PASSWORD,
+      },
+    });
+
+    // Send an email using the transporter object
+    const info = await transporter.sendMail({
+      //name and address of the sender
+      from: { name: yourname, address: email },
+      // to candidate email 
+      to:candidate?.email,
+      //subject of the email
+      subject: subject,
+      //content of the email
+      text: message,
+    });
+    return res.status(200).json({ message: 'Email sent successfully', info });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send email', error });
+  }
+}
