@@ -29,18 +29,11 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
   // taking id from req.params
   const { userId, jobId } = req.params;
 
+  //checking user exist
   const userExist = await authModel.findById(userId);
   if (!userExist) {
     return res.status(200).json("user doesn't exist");
   }
-
-  const jobIdExist = await jobPostModel.findByIdAndUpdate(jobId, {
-    status: true,
-  });
-  if (!jobIdExist) {
-    return res.status(200).json("job doesn't exist");
-  }
-
   // taking username and location from req.body
   const { name, email, coverLetter, phoneNumber, experience }: jobInterface =
     req.body;
