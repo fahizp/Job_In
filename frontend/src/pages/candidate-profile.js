@@ -83,7 +83,7 @@ export default function CandidateProfile() {
                       <h6 className="font-weight-normal">{skill.title}</h6>
                       <div className="progress">
                         <div className="progress-bar position-relative bg-primary" style={{ width: skill.range }}>
-                          <div className="progress-value d-block text-dark h6">{skill.range}%</div>
+                          <div className="progress-value d-fblock  text-dark h6">{skill.range}%</div>
                         </div>
                       </div>
                     </div>

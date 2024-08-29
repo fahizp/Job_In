@@ -1,14 +1,69 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
+import React, { useState, useContext } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/bootstrap.css';
 import bg1 from '../assets/images/hero/bg.jpg';
 import logo1 from '../assets/images/company/lenovo-logo.png';
+import { UserContext } from '../context/UserContext';
 
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import ScrollTop from '../components/scrollTop';
 
 export default function JobApply() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [typesOfJobs, setTypesOfJobs] = useState('');
+  const [description, setDescription] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [cv, setCv] = useState(null);
+  const [error, setError] = useState(''); // New state for error handling
+  let { id } = useParams();
+  const { userId } = useContext(UserContext);
+
+  const Submit = async (e) => {
+    e.preventDefault();
+  
+    if (description.length > 220) {
+      setError('Description must not exceed 220 characters');
+      return;
+    } else {
+      setError(''); // Clear error if validation passes
+    }
+  
+    const data = new FormData();
+    data.append('name', name);
+    data.append('email', email);
+    data.append('jobTitle', jobTitle);
+    data.append('typesOfJobs', typesOfJobs);
+    data.append('description', description);
+    data.append('phoneNumber', phoneNumber);
+  
+    if (cv) data.append('cv', cv);
+  
+    try {
+      const response = await axios.post(
+        `http://localhost:8001/job/jobapply/${id}?userId=${userId}`,
+        data,
+      );
+  
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+
+  const handleCvChange = (event) => {
+    const file = event.target.files[0];
+    console.log('Selected CV file:', file);
+    if (file) {
+      setCv(file);
+    }
+  };
+
   return (
     <>
       <Navbar navClass='defaultscroll sticky' navLight={true} />
@@ -70,7 +125,7 @@ export default function JobApply() {
           <div className='row justify-content-center'>
             <div className='col-lg-7 col-md-7'>
               <div className='card border-0'>
-                <form className='rounded shadow p-4'>
+                <form onSubmit={Submit} className='rounded shadow p-4'>
                   <div className='row'>
                     <div className='col-12'>
                       <div className='mb-3'>
@@ -83,6 +138,7 @@ export default function JobApply() {
                           type='text'
                           className='form-control'
                           placeholder='First Name :'
+                          onChange={(e) => setName(e.target.value)}
                         />
                       </div>
                     </div>
@@ -97,6 +153,7 @@ export default function JobApply() {
                           type='email'
                           className='form-control'
                           placeholder='Your email :'
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
                     </div>
@@ -105,12 +162,18 @@ export default function JobApply() {
                         <label className='form-label fw-semibold'>
                           Your Phone no. :<span className='text-danger'>*</span>
                         </label>
-                        <input
-                          name='number'
-                          id='number2'
-                          type='number'
+
+                        <PhoneInput
+                          id='phon'
+                          country={'eg'}
                           className='form-control'
-                          placeholder='Your phone no. :'
+                          enableSearch={true}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e)}
+                          inputStyle={{
+                            width: '100%',
+                            height: '50px',
+                          }}
                         />
                       </div>
                     </div>
@@ -124,6 +187,7 @@ export default function JobApply() {
                           id='subject2'
                           className='form-control'
                           placeholder='Title :'
+                          onChange={(e) => setJobTitle(e.target.value)}
                         />
                       </div>
                     </div>
@@ -135,6 +199,7 @@ export default function JobApply() {
                         <select
                           className='form-control form-select'
                           id='Sortbylist-Shop'
+                          onChange={(e) => setTypesOfJobs(e.target.value)}
                         >
                           <option>All Jobs</option>
                           <option>Full Time</option>
@@ -155,7 +220,11 @@ export default function JobApply() {
                           rows='4'
                           className='form-control'
                           placeholder='Describe the job :'
+                          onChange={(e) => setDescription(e.target.value)}
                         ></textarea>
+                        {error && (
+                          <div className='text-danger mt-2'>{error}</div>
+                        )}
                       </div>
                     </div>
                     <div className='col-12'>
@@ -170,6 +239,7 @@ export default function JobApply() {
                           className='form-control'
                           type='file'
                           id='formFile'
+                          onChange={handleCvChange}
                         />
                       </div>
                     </div>
@@ -187,23 +257,23 @@ export default function JobApply() {
                             htmlFor='flexCheckDefault'
                           >
                             I Accept{' '}
-                            <Link to='#' className='text-primary'>
-                              Terms And Condition
+                            <Link
+                              to='#'
+                              className='text-primary fw-semibold'
+                            >
+                              Terms and Conditions
                             </Link>
                           </label>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className='row'>
-                    <div className='col-12'>
-                      <input
+                    <div className='col-12 text-center'>
+                      <button
                         type='submit'
-                        id='submit2'
-                        name='send'
-                        className='submitBnt btn btn-primary'
-                        value='Apply Now'
-                      />
+                        className='btn btn-primary'
+                      >
+                        Apply Now
+                      </button>
                     </div>
                   </div>
                 </form>
@@ -212,7 +282,8 @@ export default function JobApply() {
           </div>
         </div>
       </section>
-      <Footer top={true} />
+
+      <Footer />
       <ScrollTop />
     </>
   );

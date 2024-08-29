@@ -78,6 +78,8 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
       $push: { appliedUsersId: userId },
     });
 
+    await jobApply.save()
+
     //sending response
     return res
       .status(200)
@@ -91,7 +93,54 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
 // job list
 export const jobList = async (req: express.Request, res: express.Response) => {
   try {
-    //
+
+    const { page = 1, limit = 10 } = req.query;
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
+
+    const skip = (pageNumber - 1) * limitNumber;
+     const userId = req.query.id
+ 
+     //fetching jobs
+     const jobsList = await jobPostModel.find().skip(skip).limit(limitNumber);
+ 
+     // Initialize an empty array named 'alljobs' to store job-related data
+     let alljobs = [];
+ 
+     //set forloop for jobs collection
+     for (let i = 0; i < jobsList.length; i++) {
+       //take userId into users
+       let users = jobsList[i].appliedUsersId;
+ 
+       //set forloop for userd Id
+       for (let j = 0; j <= users.length; j++) {
+         //checking userId and job
+         if (userId == users[j]) {
+           //adding new field to job[i] object and set status to true
+           jobsList[i].status = 'true';
+ 
+           //add job to alljobs array
+           alljobs.push(jobsList[i]);
+           break;
+         } else {
+           //adding new field to job[i] object and set status  to false
+           jobsList[i].status = 'false';
+           //add job to alljobs array
+           alljobs.push(jobsList[i]);
+         }
+       }
+     }
+
+     const totalCount = await jobPostModel.countDocuments();
+     const totalPages = Math.ceil(totalCount / limitNumber);
+
+    return res.status(200).json({
+      alljobs,
+      totalPages,
+      currentPage: pageNumber,
+    
+    });
+    
     // const userId = req.query.id
     // const userId = '66cee275873b2d1076e6b715';
     const userId = req.params.id
@@ -126,12 +175,14 @@ export const jobList = async (req: express.Request, res: express.Response) => {
       }
     }
 
-    return res.status(200).json({ alljobs: alljobs });
+
   } catch (error) {
-    console.error('Error on fetching job list:', error);
+    console.error('Error fetching job list:', error);
     res.status(500).send('Internal server error');
   }
 };
+
+
 
 //job details
 export const jobDetails = async (
@@ -158,8 +209,9 @@ export const jobSearch = async (
 ) => {
   try {
     // taking search parameters from the request body
-    const { keywords, country, jobCategory } = req.body;
-
+    const keywords = req.query.keywords as string
+    const country = req.query.country as string
+    const jobCategory = req.query.jobCategory as string
     //array for aggregation stages
     const pipeline = [];
 

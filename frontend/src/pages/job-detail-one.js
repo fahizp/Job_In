@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 import logo1 from '../assets/images/company/lenovo-logo.png';
 import bg1 from '../assets/images/hero/bg.jpg';
@@ -19,12 +20,31 @@ import {
   FiDollarSign,
   FiArrowRight,
 } from '../assets/icons/vander';
-import { jobData } from '../data/data';
 
 export default function JobDetailOne() {
-  let params = useParams();
-  let id = params.id;
-  let data = jobData.find((job) => job.id === parseInt(id));
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  let { id } = useParams();
+
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8001/job/jobdetails/${id}`);
+        setJob(response.data.jobDetails);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobDetails();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -40,12 +60,12 @@ export default function JobDetailOne() {
             <div className='col-12'>
               <div className='title-heading text-center'>
                 <img
-                  src={data?.image ? data.image : logo1}
+                  src={job?.logo ? job.logo : logo1}
                   className='avatar avatar-small rounded-pill p-2 bg-white'
                   alt=''
                 />
                 <h5 className='heading fw-semibold mb-0 sub-heading text-white title-dark mt-3'>
-                  {data?.title ? data.title : 'Back-End Developer'}
+                  {job?.title ? job.title : 'Job Title'}
                 </h5>
               </div>
             </div>
@@ -98,7 +118,7 @@ export default function JobDetailOne() {
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Company Name:</h6>
                       <small className='text-primary mb-0'>
-                        {data?.name ? data.name : 'Lenovo'}
+                        {job?.companyName ? job.companyName : 'Company Name'}
                       </small>
                     </div>
                   </div>
@@ -108,7 +128,7 @@ export default function JobDetailOne() {
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Employee Type:</h6>
                       <small className='text-primary mb-0'>
-                        {data?.jobTime ? data.jobTime : 'Full Time'}
+                        {job?.jobCategory ? job.jobCategory : 'Full Time'}
                       </small>
                     </div>
                   </div>
@@ -118,8 +138,7 @@ export default function JobDetailOne() {
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Location:</h6>
                       <small className='text-primary mb-0'>
-                        {data?.city ? data?.city : 'Beijing'},{' '}
-                        {data?.country ? data.country : 'China'}
+                        {job?.city ? job.city : 'City'}, {job?.country ? job.country : 'country'}
                       </small>
                     </div>
                   </div>
@@ -129,7 +148,7 @@ export default function JobDetailOne() {
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Job Type:</h6>
                       <small className='text-primary mb-0'>
-                        {data?.title ? data.title : 'Back-end Developer'}
+                        {job?.title ? job.title : 'Job Title'}
                       </small>
                     </div>
                   </div>
@@ -138,15 +157,17 @@ export default function JobDetailOne() {
                     <FiBriefcase className='fea icon-ex-md me-3' />
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Experience:</h6>
-                      <small className='text-primary mb-0'>+2 Year</small>
+                      <small className='text-primary mb-0'>{job?.experience ? job.experience : 'Experience.'}
+                      </small>
                     </div>
                   </div>
 
                   <div className='d-flex widget align-items-center mt-3'>
                     <FiBook className='fea icon-ex-md me-3' />
                     <div className='flex-1'>
-                      <h6 className='widget-title mb-0'>Qualifications:</h6>
-                      <small className='text-primary mb-0'>MSCIT</small>
+                      <h6 className='widget-title mb-0'>qualification:</h6>
+                      <small className='text-primary mb-0'>{job?.qualification ? job.qualification : 'qualification.'}
+                      </small>
                     </div>
                   </div>
 
@@ -154,7 +175,7 @@ export default function JobDetailOne() {
                     <FiDollarSign className='fea icon-ex-md me-3' />
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Salary:</h6>
-                      <small className='text-primary mb-0'>+50k to 70k</small>
+                      <small className='text-primary mb-0'>${job?.minSalary}-${job?.maxSalary}</small>
                     </div>
                   </div>
 
@@ -162,8 +183,8 @@ export default function JobDetailOne() {
                     <FiClock className='fea icon-ex-md me-3' />
                     <div className='flex-1'>
                       <h6 className='widget-title mb-0'>Date posted:</h6>
-                      <small className='text-primary mb-0 mb-0'>
-                        {data?.date ? data.date : '19th June, 2023'}
+                      <small className='text-primary mb-0'>
+                        {job?.date ? job.date : '19th June, 2023'}
                       </small>
                     </div>
                   </div>
@@ -174,197 +195,39 @@ export default function JobDetailOne() {
             <div className='col-lg-8 col-md-6 col-12'>
               <h5>Job Description: </h5>
               <p className='text-muted'>
-                One disadvantage of Lorum Ipsum is that in Latin certain letters
-                appear more frequently than others - which creates a distinct
-                visual impression. Moreover, in Latin only words at the
-                beginning of sentences are capitalized.
-              </p>
-              <p className='text-muted'>
-                This means that Lorem Ipsum cannot accurately represent, for
-                example, German, in which all nouns are capitalized. Thus, Lorem
-                Ipsum has only limited suitability as a visual filler for German
-                texts. If the fill text is intended to illustrate the
-                characteristics of different typefaces.
-              </p>
-              <p className='text-muted'>
-                It sometimes makes sense to select texts containing the various
-                letters and symbols specific to the output language.
+                {job?.description ? job.description : 'Job description not available.'}
               </p>
 
               <h5 className='mt-4'>Responsibilities and Duties: </h5>
-              <p className='text-muted'>
-                It sometimes makes sense to select texts containing the various
-                letters and symbols specific to the output language.
-              </p>
               <ul className='list-unstyled'>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Participate in requirements analysis
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Write clean, scalable code using C# and .NET frameworks
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Test and deploy applications and systems
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Revise, update, refactor and debug code
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Improve existing software
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Develop documentation throughout the software development life
-                  cycle (SDLC)
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Serve as an expert on applications and provide technical
-                  support
-                </li>
+                  <li className='text-muted mt-2'>
+                    <FiArrowRight className='fea icon-sm text-primary me-2' />
+                    {job.responsibilities}
+                  </li>
               </ul>
 
               <h5 className='mt-4'>
-                Required Experience, Skills and Qualifications:{' '}
+                Required Experience, Skills and qualification:
               </h5>
-              <p className='text-muted'>
-                It sometimes makes sense to select texts containing the various
-                letters and symbols specific to the output language.
-              </p>
               <ul className='list-unstyled'>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Proven experience as a .NET Developer or Application Developer
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  good understanding of SQL and Relational Databases,
-                  specifically Microsoft SQL Server.
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Experience designing, developing and creating RESTful web
-                  services and APIs
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Basic know how of Agile process and practices
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Good understanding of object-oriented programming.
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Good understanding of concurrent programming.
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Sound knowledge of application architecture and design.
-                </li>
-                <li className='text-muted mt-2'>
-                  <FiArrowRight className='fea icon-sm text-primary me-2' />
-                  Excellent problem solving and analytical skills
-                </li>
+              
+                  <li className='text-muted mt-2' >
+                    <FiArrowRight className='fea icon-sm text-primary me-2' />
+                    {job?.Requireds ? job.Requireds : 'Required Experience, Skills and qualification.'}
+                    </li>
               </ul>
 
-              <div className='mt-4'>
-                <Link to='/job-apply' className='btn btn-outline-primary'>
+              <div className='d-flex align-items-center mt-4'>
+              <Link to={`/job-apply/${job._id}`} className='btn btn-outline-primary'>
                   Apply Now <i className='mdi mdi-send'></i>
                 </Link>
               </div>
             </div>
           </div>
         </div>
-
-        <div className='container mt-100 mt-60'>
-          <div className='row justify-content-center mb-4 pb-2'>
-            <div className='col-12'>
-              <div className='section-title text-center'>
-                <h4 className='title mb-3'>Related Vacancies</h4>
-                <p className='text-muted para-desc mx-auto mb-0'>
-                  Search all the open positions on the web. Get your own
-                  personalized salary estimate. Read reviews on over 30000+
-                  companies worldwide.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className='row'>
-            {jobData.slice(0, 3).map((item, index) => {
-              return (
-                <div className='col-lg-4 col-md-6 col-12 mt-4 pt-2' key={index}>
-                  <div className='job-post rounded shadow p-4'>
-                    <div className='d-flex align-items-center justify-content-between'>
-                      <div className='d-flex align-items-center'>
-                        <img
-                          src={item.image}
-                          className='avatar avatar-small rounded shadow p-3 bg-white'
-                          alt=''
-                        />
-
-                        <div className='ms-3'>
-                          <Link
-                            to='/employer-profile'
-                            className='h5 company text-dark'
-                          >
-                            {item.name}
-                          </Link>
-                          <span className='text-muted d-flex align-items-center small mt-2'>
-                            <FiClock className='fea icon-sm me-1' />{' '}
-                            {item.posted} days ago
-                          </span>
-                        </div>
-                      </div>
-
-                      <span className='badge bg-soft-primary'>
-                        {item.jobTime}
-                      </span>
-                    </div>
-
-                    <div className='mt-4'>
-                      <Link
-                        to={`/job-detail-one/${item.id}`}
-                        className='text-dark title h5'
-                      >
-                        {item.title}
-                      </Link>
-
-                      <span className='text-muted d-flex align-items-center mt-2'>
-                        <FiMapPin className='fea icon-sm me-1' />
-                        {item.country}
-                      </span>
-
-                      <div className='progress-box mt-3'>
-                        <div className='progress mb-2'>
-                          <div
-                            className='progress-bar position-relative bg-primary'
-                            style={{ width: '50%' }}
-                          ></div>
-                        </div>
-
-                        <span className='text-dark'>
-                          {item.applied} applied of{' '}
-                          <span className='text-muted'>
-                            {item.vacancy} vacancy
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </section>
-      <Footer top={true} />
+
+      <Footer />
       <ScrollTop />
     </>
   );
