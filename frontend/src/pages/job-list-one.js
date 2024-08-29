@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { UserContext } from '../context/UserContext';
+
 import bg1 from "../assets/images/hero/bg.jpg";
 import Navbar from "../components/navbar";
 import AboutTwo from "../components/aboutTwo";
@@ -18,6 +20,7 @@ const daysAgo = (dateString) => {
 };
 
 export default function JobListOne() {
+  const { userId } = useContext(UserContext);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,7 +31,7 @@ export default function JobListOne() {
       setLoading(true);
       try {
         const response = await axios.get(`http://localhost:8001/job/joblist`, {
-          params: { page }
+          params: { page,userId }
         });
         setList(response.data.alljobs);
         setTotalPages(response.data.totalPages);
