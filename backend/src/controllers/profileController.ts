@@ -11,10 +11,6 @@ import {
 } from '@aws-sdk/client-s3';
 import nodemailer from 'nodemailer';
 
-const randomImageName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString('hex');
-
-
 // Retrieve and cast environment variables for S3 bucket configuration
 const bucketName = process.env.BUCKET_NAME as string;
 const bucketRegion = process.env.BUCKET_REGION as string;
