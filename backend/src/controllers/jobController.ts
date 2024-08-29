@@ -93,8 +93,8 @@ export const jobList = async (req: express.Request, res: express.Response) => {
   try {
     //
     // const userId = req.query.id
-    const userId = '66cee275873b2d1076e6b715';
-    // const userId = req.params.id
+    // const userId = '66cee275873b2d1076e6b715';
+    const userId = req.params.id
 
     //fetching jobs
     const jobsList = await jobPostModel.find();
