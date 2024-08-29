@@ -34,7 +34,7 @@ export const userSignUp = async (
       name,
       email,
       password: hashedpassword,
-      googleId: null,
+      googleId:"",
     });
 
     // saving newUser
@@ -96,6 +96,9 @@ export const userLogin = async (
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    console.log("this is user",user.password);
+    
 
     // password verificaiton
     const verifyPassword = await bcrypt.compare(password, user.password as string);

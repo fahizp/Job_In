@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { string } from 'yup';
 
 const jobApplySchema = new mongoose.Schema(
   {
@@ -10,16 +11,11 @@ const jobApplySchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
-    jobTitle: {
+    experience: {
       type: String,
     },
-    typesOfJobs: {
-      type: String,
-    },
-
-    description: {
+    coverLetter: {
       type: String,
       maxLength: 220,
     },
@@ -29,13 +25,22 @@ const jobApplySchema = new mongoose.Schema(
     cv: {
       type: String,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
+    status: {
+      type: String,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-export const jobApplyModel = mongoose.model('Job applies', jobApplySchema);
+export const jobApplyModel = mongoose.model('jobApplies', jobApplySchema);
 
 const jobPostSchema = new mongoose.Schema(
   {
@@ -89,20 +94,27 @@ const jobPostSchema = new mongoose.Schema(
     },
     responsibilities: {
       type: String,
+      maxLength: 800,
     },
     description: {
       type: String,
       required: true,
-      maxLength: 520,
+      maxLength: 800,
     },
     Requireds: {
       type: String,
-      maxLength: 520,
+      maxLength: 800,
     },
     postedDate: {
-      type:Number ,
-      default: Date.now
+      type: Number,
+      default: Date.now,
     },
+    status: {
+      type: String,
+    },
+    appliedUsersId:{
+      type:[String]
+    }
   },
   {
     timestamps: true,

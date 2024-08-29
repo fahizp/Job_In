@@ -1,6 +1,7 @@
 import express from 'express';
 import authModel from '../models/authModel';
 import bcrypt from 'bcrypt';
+
 import { validationResult } from 'express-validator';
 import { profileInterface, requestFile } from '../utils/typos';
 import {
@@ -9,6 +10,10 @@ import {
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import nodemailer from 'nodemailer';
+
+const randomImageName = (bytes = 32) =>
+  crypto.randomBytes(bytes).toString('hex');
+
 
 // Retrieve and cast environment variables for S3 bucket configuration
 const bucketName = process.env.BUCKET_NAME as string;
@@ -64,6 +69,7 @@ export const profileDetails = async (
       uploadProfilePhoto =
         'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg';
     }
+
 
     // Upload Banner
     let uploadBanner;
@@ -249,19 +255,26 @@ export const deleteAccount = async (
 
   try {
     //deleting user from authmodel
-    const user = await authModel.findByIdAndDelete(userId);
+    const user = await authModel.findByIdAndDelete({ _id: userId });
 
     //handling user not found situation
     if (!user) {
       return res.status(404).json('user not found');
     }
-    //deleting profile photo from s3 bucket
-    // const params = {
-    //   Bucket: bucketName,
-    //   Key: user.profilePhoto,
-    // };
-    // const command = new DeleteObjectCommand(params);
-    // await s3.send(command);
+
+    // deleting profile photo from s3 bucket
+    const params = {
+      Bucket: bucketName,
+      Key: user.profilePhoto,
+    };
+    const command = new DeleteObjectCommand(params);
+    try {
+      await s3.send(command);
+      console.log('File deleted successfully');
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
+
 
     //sending response
     return res.status(200).json('Account deleted ');
@@ -270,7 +283,6 @@ export const deleteAccount = async (
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 
 //feteching profile details
 export const userDetails = async (
@@ -300,6 +312,8 @@ export const userDetails = async (
     return res.status(200).json({ 'user details': user });
   } catch (error) {
     console.error('Internal server error:', error);
+
     return res.status(500).json({ message: 'Internal server error' });
   }
 }
+
