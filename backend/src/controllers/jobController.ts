@@ -140,42 +140,6 @@ export const jobList = async (req: express.Request, res: express.Response) => {
       currentPage: pageNumber,
     
     });
-    
-    // const userId = req.query.id
-    // const userId = '66cee275873b2d1076e6b715';
-    const userId = req.params.id
-
-    //fetching jobs
-    const jobsList = await jobPostModel.find();
-
-    // Initialize an empty array named 'alljobs' to store job-related data
-    let alljobs = [];
-
-    //set forloop for jobs collection
-    for (let i = 0; i < jobsList.length; i++) {
-      //take userId into users
-      let users = jobsList[i].appliedUsersId;
-
-      //set forloop for userd Id
-      for (let j = 0; j <= users.length; j++) {
-        //checking userId and job
-        if (userId == users[j]) {
-          //adding new field to job[i] object and set status to true
-          jobsList[i].status = 'true';
-
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-          break;
-        } else {
-          //adding new field to job[i] object and set status  to false
-          jobsList[i].status = 'false';
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-        }
-      }
-    }
-
-
   } catch (error) {
     console.error('Error fetching job list:', error);
     res.status(500).send('Internal server error');
