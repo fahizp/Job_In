@@ -9,14 +9,28 @@ export const homeSearch = async (
 ) => {
   try {
     // taking search parameters from the request body
-    const keywords = req.query.keywords as string
+    const keywords = req.body.keywords as string;
     //finding candidates using keyword
+    console.log(keywords);
+    
 
-    if (keywords === '') {
+    if (keywords==="") {
       return res.status(200).json('Not results found');
     }
     const candidates = await candidateModel.aggregate([
-      { $match: { occupation: new RegExp(keywords, 'i') } },
+      {
+        $match: {
+          $or: [
+            { occupation: new RegExp(keywords, 'i') },
+            { city: new RegExp(keywords, 'i') },
+            { country: new RegExp(keywords, 'i') },
+            { experience: { $elemMatch: { role: new RegExp(keywords, 'i') } } },
+            { companyName: new RegExp(keywords, 'i') },
+            { totalExperience: new RegExp(keywords, 'i') },
+            { skills: { $elemMatch: { title: new RegExp(keywords, 'i') } } }
+          ],
+        },
+      },
       {
         $project: {
           firstName: 1,
@@ -25,12 +39,25 @@ export const homeSearch = async (
           profilePhoto: 1,
           totalExperience: 1,
         },
-      },{$limit:5}
+      },
+      { $limit: 5 },
     ]);
 
     //finding jobs using keyword and projecting fields.
     const jobs = await jobPostModel.aggregate([
-      { $match: { title: new RegExp(keywords, 'i') } },
+      {
+        $match: {
+          $or: [
+            { companyName: new RegExp(keywords, 'i') },
+            { jobType: new RegExp(keywords, 'i') },
+            { companyName: new RegExp(keywords, 'i') },
+            { jobCategory: new RegExp(keywords, 'i') },
+            { experience: new RegExp(keywords, 'i') },
+            { country: new RegExp(keywords, 'i') },
+            { state: new RegExp(keywords, 'i') },
+          ],
+        },
+      },
       {
         $project: {
           title: 1,
@@ -41,7 +68,8 @@ export const homeSearch = async (
           maxSalary: 1,
           postedDate: 1,
         },
-      },{$limit:5}
+      },
+      { $limit: 5 },
     ]);
 
     //checking jobs and candidate.
