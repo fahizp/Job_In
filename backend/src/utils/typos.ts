@@ -86,9 +86,13 @@ export interface jobInterface {
   
 }
 
-
 export interface MatchStage {
-  $or: ({ title: { $regex: any; $options: string; }; companyName?: undefined; description?: undefined; experience?: undefined; } | { companyName: { $regex: any; $options: string; }; title?: undefined; description?: undefined; experience?: undefined; } | { description: { $regex: any; $options: string; }; title?: undefined; companyName?: undefined; experience?: undefined; } | { experience: { $regex: any; $options: string; }; title?: undefined; companyName?: undefined; description?: undefined; })[];
+  $or?: Array<{
+    title?: { $regex: string; $options: string };
+    companyName?: { $regex: string; $options: string };
+    description?: { $regex: string; $options: string };
+    experience?: { $regex: string; $options: string };
+  }>;
   title?: { $regex: string; $options: string };
   country?: { $regex: string; $options: string };
   jobCategory?: { $regex: string; $options: string };
