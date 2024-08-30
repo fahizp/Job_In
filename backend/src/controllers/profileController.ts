@@ -3,7 +3,7 @@ import authModel from '../models/authModel';
 import bcrypt from 'bcrypt';
 
 import { validationResult } from 'express-validator';
-import { profileInterface, requestFile } from '../utils/typos';
+import { profileInterface } from '../utils/typos';
 import {
   S3Client,
   PutObjectCommand,
@@ -26,7 +26,7 @@ const s3 = new S3Client({
   region: bucketRegion,
 });
 
-//updating profile details
+//updating personaldetails
 export const profileDetails = async (
   req: express.Request,
   res: express.Response,
@@ -35,20 +35,37 @@ export const profileDetails = async (
   const userId = req.params.id;
 
   // taking username and location from req.body
-  const { username, occupation }: profileInterface = req.body;
-
+  const { username, occupation, mobile }: profileInterface = req.body;
   //Retrieve the uploaded file from the request object.
   const { profilePhoto, banner }: any = req.files;
 
   try {
+    const test = await authModel.findById(userId);
+    console.log('this ', test);
+
     //checking name is exist
-    const nameExist = (await authModel.findOne({
-      username,
-    })) as profileInterface;
-    if (nameExist) {
-      console.log('username already in use');
-      return res.status(409).json({ messaage: 'username already exist' });
+    if (username) {
+      const nameExist = await authModel.find({ _id: userId, name: username });
+
+      if (nameExist.length > 0) {
+        console.log('username already in use');
+        return res.status(409).json({ messaage: 'username already exist' });
+      }
     }
+
+    //checking mobile number already exist in db.
+    if (mobile) {
+      const mobileNumberExist = (await authModel.findOne({
+        mobile,
+      })) as profileInterface;
+      if (mobileNumberExist) {
+        console.log('mobile Number already in use');
+        return res
+          .status(409)
+          .json({ messaage: 'mobile Number already exist' });
+      }
+    }
+
     // Upload Profile Photo
     let uploadProfilePhoto;
     if (profilePhoto) {
@@ -61,11 +78,7 @@ export const profileDetails = async (
       const profilePhotoCommand = new PutObjectCommand(profilePhotoParams);
       uploadProfilePhoto = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/profile-photos/${profilePhoto[0].originalname}`;
       await s3.send(profilePhotoCommand);
-    } else {
-      uploadProfilePhoto =
-        'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg';
     }
-
 
     // Upload Banner
     let uploadBanner;
@@ -79,9 +92,6 @@ export const profileDetails = async (
       uploadBanner = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/banners/${banner[0].originalname}`;
       const bannerCommand = new PutObjectCommand(bannerParams);
       await s3.send(bannerCommand);
-    } else {
-      uploadBanner =
-        'https://jobinproject.s3.ap-south-1.amazonaws.com/default+banner.jpeg';
     }
 
     //updating user details
@@ -90,7 +100,10 @@ export const profileDetails = async (
       occupation,
       profilePhoto: uploadProfilePhoto,
       banner: uploadBanner,
+      mobile,
     })) as string;
+
+    const Finaltest = await authModel.findById(userId);
 
     //checking user
     if (!updateUserDetails) {
@@ -98,44 +111,11 @@ export const profileDetails = async (
     }
 
     //sending response
-    return res
-      .status(200)
-      .json({ message: 'Updated successfully', updateUserDetails });
+    return res.status(200).json({ message: 'Updated successfully', Finaltest });
   } catch (error) {
     console.error('Internal server error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-};
-
-//updating user contact details
-export const contactInfo = async (
-  req: express.Request,
-  res: express.Response,
-) => {
-  const userId = req.params.id;
-  console.log(userId);
-
-  const { mobile, website }: profileInterface = req.body;
-
-  //checking mobile number already exist in db.
-  const mobileNumberExist = (await authModel.findOne({
-    mobile,
-  })) as profileInterface;
-  if (mobileNumberExist) {
-    console.log('mobile Number already in use');
-    return res.status(409).json({ messaage: 'mobile Number already exist' });
-  }
-
-  //updating user contact details
-  const updateContactDetails = (await authModel.findByIdAndUpdate(userId, {
-    website,
-    mobile,
-  })) as profileInterface;
-
-  //sending response
-  return res
-    .status(200)
-    .json({ message: 'Updated successfully', updateContactDetails });
 };
 
 //reseting password
@@ -271,7 +251,6 @@ export const deleteAccount = async (
       console.error('Error deleting file:', error);
     }
 
-
     //sending response
     return res.status(200).json('Account deleted ');
   } catch (error) {
@@ -309,7 +288,6 @@ export const userDetails = async (
   } catch (error) {
     console.error('Internal server error:', error);
 
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}
-
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};

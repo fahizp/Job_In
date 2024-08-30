@@ -33,6 +33,7 @@ const signUpSchema = new mongoose.Schema(
     },
     banner: {
       type: String,
+      default: 'https://jobinproject.s3.ap-south-1.amazonaws.com/default+banner.jpeg'
     },
     googleId: { type: String, sparse: true},
    

@@ -57,6 +57,7 @@ export interface profileInterface {
   yourname: string;
   email: string;
   occupation: string;
+  details:string;
 }
 
 export interface jobInterface {

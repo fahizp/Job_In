@@ -5,7 +5,6 @@ import { body } from 'express-validator';
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 import {
-  contactInfo,
   contactUsPage,
   deleteAccount,
   passwordReset,
@@ -26,8 +25,6 @@ router.post(
   }),
   profileDetails,
 );
-
-router.post('/ContactInfo/:id', contactInfo);
 
 // reset password and  password validation
 router.post(
