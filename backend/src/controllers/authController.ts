@@ -25,6 +25,12 @@ export const userSignUp = async (
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
     }
+    // checking the name already exist
+    const nameExist = await authModel.findOne({ name });
+    if (nameExist) {
+      console.log('name already in use');
+      return res.status(409).json({ messaage: 'name already exist' });
+    }
 
     // checking the email already exist
     const emailExist = await authModel.findOne({ email });
