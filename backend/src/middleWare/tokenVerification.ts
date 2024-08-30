@@ -4,7 +4,6 @@ import { UserSignUpInterface } from '../utils/typos';
 
 export const tokenVerification = async (
   req: express.Request,
-
   res: express.Response,
   next: express.NextFunction,
 ) => {

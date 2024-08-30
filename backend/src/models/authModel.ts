@@ -28,7 +28,9 @@ const signUpSchema = new mongoose.Schema(
       type: String,
       default: 'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg',
     },
-
+    refreshToken:{
+      type:String
+    },
     banner: {
       type: String,
     },

@@ -6,6 +6,7 @@ export interface UserSignUpInterface {
   userid: string;
   secretKey: string;
   decoded: string;
+  refreshtokenkey:string;
 }
 
 export interface CandidateInterface {
