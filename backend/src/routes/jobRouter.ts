@@ -27,7 +27,7 @@ router.post(
 );
 
 //job list
-router.get('/joblist/:id',tokenVerification,jobList);
+router.get('/joblist/:id',jobList);
 
 //job details
 router.get('/jobdetails/:id', jobDetails);

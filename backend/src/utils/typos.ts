@@ -84,7 +84,7 @@ export interface jobInterface {
   address:string;
   logo:string;
   coverLetter:string;
-  
+  appliedUsersId: string[]; 
 }
 
 export interface MatchStage {

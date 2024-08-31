@@ -93,36 +93,30 @@ export const jobList = async (req: express.Request, res: express.Response) => {
     const limitNumber = parseInt(limit as string, 10);
 
     const skip = (pageNumber - 1) * limitNumber;
-    const userId = req.query.id;
+    const userId = req.query.id as string;
 
     //fetching jobs
-    const jobsList = await jobPostModel.find().skip(skip).limit(limitNumber);
+    const jobs = await jobPostModel.find().skip(skip).limit(limitNumber);
 
     // Initialize an empty array named 'alljobs' to store job-related data
     let alljobs = [];
 
-    //set forloop for jobs collection
-    for (let i = 0; i < jobsList.length; i++) {
-      //take userId into users
-      let users = jobsList[i].appliedUsersId;
+    // Loop through each job
+    for (let i = 0; i < jobs.length; i++) {
+      // Get the list of applied users' IDs
+      let users = jobs[i].appliedUsersId;
 
-      //set forloop for userd Id
-      for (let j = 0; j <= users.length; j++) {
-        //checking userId and job
-        if (userId == users[j]) {
-          //adding new field to job[i] object and set status to true
-          jobsList[i].status = 'true';
-
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-          break;
-        } else {
-          //adding new field to job[i] object and set status  to false
-          jobsList[i].status = 'false';
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-        }
+      // Check if the current user has applied to this job
+      if (users.includes(userId)) {
+        // Set status to true for this job
+        jobs[i].status = 'true';
+      } else {
+        // Set status to false for this job
+        jobs[i].status = 'false';
       }
+
+      // Add the job to the 'alljobs' array
+      alljobs.push(jobs[i]);
     }
 
     const totalCount = await jobPostModel.countDocuments();
@@ -157,7 +151,7 @@ export const jobDetails = async (
   }
 };
 
-//HEAD:job serach
+//job serach
 export const jobSearch = async (
   req: express.Request,
   res: express.Response,
@@ -174,7 +168,7 @@ export const jobSearch = async (
     const matchStage: MatchStage = {};
 
     // Array to hold the $or conditions
-    const orConditions: Record<string, any>[]= [];
+    const orConditions: Record<string, any>[] = [];
 
     // checking keywords
     if (keywords) {
@@ -316,7 +310,6 @@ export const jobPost = async (req: express.Request, res: express.Response) => {
       Requireds,
       address,
       logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${logo?.originalname}`,
-      status: false,
     });
 
     //saving new candidate
