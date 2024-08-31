@@ -8,7 +8,6 @@ import {
   jobPost,
   jobSearch,
 } from '../controllers/jobController';
-import { tokenVerification } from '../middleWare/tokenVerification';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });

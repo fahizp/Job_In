@@ -206,8 +206,9 @@ export const contactUsPage = async (
 
     // Send an email using the transporter object
     const info = await transporter.sendMail({
-      //name and address of the sender
       from: { name: yourname, address: email },
+      //name and address of the sender
+      replyTo: `<${email}>`,
       // to email taken from env
       to: process.env.EMAIL,
       //subject of the email

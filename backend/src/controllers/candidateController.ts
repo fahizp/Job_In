@@ -5,7 +5,6 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { validationResult } from 'express-validator';
 import nodemailer from 'nodemailer';
 
-
 // candidate Post
 export const candidatePost = async (
   req: express.Request,
@@ -211,7 +210,6 @@ export const candidateList = async (
         },
       },
     ]);
-    
 
     return res.status(200).json({ candidateList: candidateList });
   } catch (error) {
@@ -221,18 +219,24 @@ export const candidateList = async (
 };
 
 //candidate details
-export const candidateDetails = async (req: express.Request, res: express.Response) => {
+export const candidateDetails = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   const id = req.params.id;
-  try{
-      const candidate = await candidateModel.findById({_id:id})
-  return res.status(200).json(candidate)
-  }catch (err) {
-      res.status(500).json(err);
-    }
+  try {
+    const candidate = await candidateModel.findById({ _id: id });
+    return res.status(200).json(candidate);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
-//get in touch 
-export const getInTouch = async (req: express.Request, res: express.Response) => {
+//get in touch
+export const getInTouch = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   // taking yourname,email,subject,message from req.body
   const { yourname, email, subject, message }: profileInterface = req.body;
 
@@ -240,15 +244,15 @@ export const getInTouch = async (req: express.Request, res: express.Response) =>
   const id = req.params.id;
 
   try {
-    // email validation 
+    // email validation
     const err = validationResult(req);
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
     }
 
     //taking candidate by id
-    const candidate = await candidateModel.findById({_id:id})
-    
+    const candidate = await candidateModel.findById({ _id: id });
+
     // Create a transporter object using the nodemailer module
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -261,10 +265,11 @@ export const getInTouch = async (req: express.Request, res: express.Response) =>
 
     // Send an email using the transporter object
     const info = await transporter.sendMail({
-      //name and address of the sender
       from: { name: yourname, address: email },
-      // to candidate email 
-      to:candidate?.email,
+      //name and address of the sender
+      replyTo: `<${email}>`,
+      // to candidate email
+      to: candidate?.email,
       //subject of the email
       subject: subject,
       //content of the email
@@ -274,4 +279,4 @@ export const getInTouch = async (req: express.Request, res: express.Response) =>
   } catch (error) {
     res.status(500).json({ message: 'Failed to send email', error });
   }
-}
+};

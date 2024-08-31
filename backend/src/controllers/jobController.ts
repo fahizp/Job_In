@@ -69,7 +69,7 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
     await jobApply.save();
 
     // storing userId to  appliedUsersId field in jobPostModel
-    const jobDetails = await jobPostModel.findByIdAndUpdate(jobId, {
+    await jobPostModel.findByIdAndUpdate(jobId, {
       $push: { appliedUsersId: userId },
     });
 
@@ -99,12 +99,12 @@ export const jobList = async (req: express.Request, res: express.Response) => {
     const jobs = await jobPostModel.find().skip(skip).limit(limitNumber);
 
     // Initialize an empty array named 'alljobs' to store job-related data
-    let alljobs = [];
+    const alljobs = [];
 
     // Loop through each job
     for (let i = 0; i < jobs.length; i++) {
       // Get the list of applied users' IDs
-      let users = jobs[i].appliedUsersId;
+      const users = jobs[i].appliedUsersId;
 
       // Check if the current user has applied to this job
       if (users.includes(userId)) {
