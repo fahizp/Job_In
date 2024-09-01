@@ -11,10 +11,6 @@ import {
 } from '@aws-sdk/client-s3';
 import nodemailer from 'nodemailer';
 
-
-
-
-
 // Retrieve and cast environment variables for S3 bucket configuration
 const bucketName = process.env.BUCKET_NAME as string;
 const bucketRegion = process.env.BUCKET_REGION as string;
@@ -39,7 +35,7 @@ export const profileDetails = async (
   const userId = req.params.id;
 
   // taking username and location from req.body
-  const { username, occupation }: profileInterface = req.body;
+  const { username, occupation, mobile }: profileInterface = req.body;
 
   //Retrieve the uploaded file from the request object.
   const { profilePhoto, banner }: any = req.files;
@@ -53,6 +49,10 @@ export const profileDetails = async (
       console.log('username already in use');
       return res.status(409).json({ messaage: 'username already exist' });
     }
+
+    //checking mobile number already exist in db.
+   
+
     // Upload Profile Photo
     let uploadProfilePhoto;
     if (profilePhoto) {
@@ -69,7 +69,6 @@ export const profileDetails = async (
       uploadProfilePhoto =
         'https://jobinproject.s3.ap-south-1.amazonaws.com/Classic.jpeg';
     }
-
 
     // Upload Banner
     let uploadBanner;
@@ -92,10 +91,17 @@ export const profileDetails = async (
     const updateUserDetails = (await authModel.findByIdAndUpdate(userId, {
       name: username,
       occupation,
+      mobile,
       profilePhoto: uploadProfilePhoto,
       banner: uploadBanner,
     })) as string;
-
+    // const mobileNumberExist = (await authModel.findOne({
+    //   mobile,
+    // })) as profileInterface;
+    // if (mobileNumberExist) {
+    //   console.log('mobile Number already in use');
+    //   return res.status(409).json({ messaage: 'mobile Number already exist' });
+    // }
     //checking user
     if (!updateUserDetails) {
       return res.status(404).json({ message: 'User not found' });
@@ -112,35 +118,35 @@ export const profileDetails = async (
 };
 
 //updating user contact details
-export const contactInfo = async (
-  req: express.Request,
-  res: express.Response,
-) => {
-  const userId = req.params.id;
-  console.log(userId);
+// export const contactInfo = async (
+//   req: express.Request,
+//   res: express.Response,
+// ) => {
+//   const userId = req.params.id;
+//   console.log(userId);
 
-  const { mobile, website }: profileInterface = req.body;
+//   const { mobile, website }: profileInterface = req.body;
 
-  //checking mobile number already exist in db.
-  const mobileNumberExist = (await authModel.findOne({
-    mobile,
-  })) as profileInterface;
-  if (mobileNumberExist) {
-    console.log('mobile Number already in use');
-    return res.status(409).json({ messaage: 'mobile Number already exist' });
-  }
+//   //checking mobile number already exist in db.
+//   const mobileNumberExist = (await authModel.findOne({
+//     mobile,
+//   })) as profileInterface;
+//   if (mobileNumberExist) {
+//     console.log('mobile Number already in use');
+//     return res.status(409).json({ messaage: 'mobile Number already exist' });
+//   }
 
-  //updating user contact details
-  const updateContactDetails = (await authModel.findByIdAndUpdate(userId, {
-    website,
-    mobile,
-  })) as profileInterface;
+//   //updating user contact details
+//   const updateContactDetails = (await authModel.findByIdAndUpdate(userId, {
+//     website,
+//     mobile,
+//   })) as profileInterface;
 
-  //sending response
-  return res
-    .status(200)
-    .json({ message: 'Updated successfully', updateContactDetails });
-};
+//   //sending response
+//   return res
+//     .status(200)
+//     .json({ message: 'Updated successfully', updateContactDetails });
+// };
 
 //reseting password
 export const passwordReset = async (
@@ -275,7 +281,6 @@ export const deleteAccount = async (
       console.error('Error deleting file:', error);
     }
 
-
     //sending response
     return res.status(200).json('Account deleted ');
   } catch (error) {
@@ -313,7 +318,6 @@ export const userDetails = async (
   } catch (error) {
     console.error('Internal server error:', error);
 
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-}
-
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
