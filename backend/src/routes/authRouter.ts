@@ -3,7 +3,6 @@ import {
   userSignUp,
   userLogin,
   logout,
-  protect,
   refreshingToken,
   forgetPassword,
   passwordReset,
@@ -17,7 +16,7 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  body('name', 'Username should be minimum 3 characters').isLength({ min: 3 }),
+  body('name', 'Username should be minimum 6 characters').isLength({ min: 3 }),
 
   body('email')
     .isEmail()
@@ -35,8 +34,7 @@ router.post(
 );
 
 router.post('/login', userLogin);
-router.post('/logout', logout);
-router.get('/protected', tokenVerification, protect);
+router.post('/logoutgit',tokenVerification,logout);
 router.post('/refreshtoken', refreshingToken);
 router.post('/google',googleAuth );
 router.post('/forgetpassword',forgetPassword)
