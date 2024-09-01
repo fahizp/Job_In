@@ -28,7 +28,7 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
   });
   // taking id from req.params
   const { userId, jobId } = req.params;
-
+console.log( userId, jobId)
   //checking user exist
   const userExist = await authModel.findById(userId);
   if (!userExist) {
