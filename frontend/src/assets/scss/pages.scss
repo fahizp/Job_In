@@ -1,0 +1,84 @@
+.google{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+ }
+
+.or{
+display: flex;
+align-items: center;
+text-align: center;
+margin-left: 150px;
+margin-top: 10px;
+}
+
+
+/* TrashButton.css */
+#trash{
+  background-color: red; 
+  color: white;
+  border: none;
+  border-radius: 50%; 
+ 
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+}
+
+#trash:hover {
+  background-color: rgb(164, 5, 5); 
+}
+
+
+#plus{
+    background-color: rgb(13, 165, 8); 
+    color: white;
+    border: none;
+    border-radius: 50%; 
+   
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  
+}
+
+
+#plus:hover {
+    background-color: rgb(9, 89, 3); 
+  }
+
+  .web{
+    color: #3648eb;
+  }
+
+  .web span{
+    color: #000;
+  }
+
+.view-all-link {
+  color: #007BFF;
+  font-size: 14px; 
+  text-decoration: none;
+  font-weight: bold; 
+  display: flex;
+  align-items: center;
+  float: right;
+
+}
+
+.view-all-link:hover {
+  color: #0056b3;
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+  margin-left: 5px; 
+}
+
+.view-all-link:hover .arrow-icon {
+  transform: translateX(5px); 
+}
+
+
