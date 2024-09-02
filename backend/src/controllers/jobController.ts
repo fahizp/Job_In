@@ -1,12 +1,7 @@
 import express from 'express';
-import { ObjectId } from 'mongodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { jobInterface, MatchStage } from '../utils/typos';
-import {
-  // appliedJobModel,
-  jobApplyModel,
-  jobPostModel,
-} from '../models/jobModel';
+import { jobApplyModel, jobPostModel } from '../models/jobModel';
 import { validationResult } from 'express-validator';
 import authModel from '../models/authModel';
 
@@ -74,11 +69,11 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
     await jobApply.save();
 
     // storing userId to  appliedUsersId field in jobPostModel
-    const jobDetails = await jobPostModel.findByIdAndUpdate(jobId, {
+    await jobPostModel.findByIdAndUpdate(jobId, {
       $push: { appliedUsersId: userId },
     });
 
-    await jobApply.save()
+    await jobApply.save();
 
     //sending response
     return res
@@ -90,99 +85,53 @@ export const jobApply = async (req: express.Request, res: express.Response) => {
   }
 };
 
-// job list
+//job list
 export const jobList = async (req: express.Request, res: express.Response) => {
   try {
-
     const { page = 1, limit = 10 } = req.query;
     const pageNumber = parseInt(page as string, 10);
     const limitNumber = parseInt(limit as string, 10);
 
     const skip = (pageNumber - 1) * limitNumber;
-     const userId = req.query.id
- 
-     //fetching jobs
-     const jobsList = await jobPostModel.find().skip(skip).limit(limitNumber);
- 
-     // Initialize an empty array named 'alljobs' to store job-related data
-     let alljobs = [];
- 
-     //set forloop for jobs collection
-     for (let i = 0; i < jobsList.length; i++) {
-       //take userId into users
-       let users = jobsList[i].appliedUsersId;
- 
-       //set forloop for userd Id
-       for (let j = 0; j <= users.length; j++) {
-         //checking userId and job
-         if (userId == users[j]) {
-           //adding new field to job[i] object and set status to true
-           jobsList[i].status = 'true';
- 
-           //add job to alljobs array
-           alljobs.push(jobsList[i]);
-           break;
-         } else {
-           //adding new field to job[i] object and set status  to false
-           jobsList[i].status = 'false';
-           //add job to alljobs array
-           alljobs.push(jobsList[i]);
-         }
-       }
-     }
+    const userId = req.query.id as string;
 
-     const totalCount = await jobPostModel.countDocuments();
-     const totalPages = Math.ceil(totalCount / limitNumber);
+    //fetching jobs
+    const jobs = await jobPostModel.find().skip(skip).limit(limitNumber);
+
+    // Initialize an empty array named 'alljobs' to store job-related data
+    const alljobs = [];
+
+    // Loop through each job
+    for (let i = 0; i < jobs.length; i++) {
+      // Get the list of applied users' IDs
+      const users = jobs[i].appliedUsersId;
+
+      // Check if the current user has applied to this job
+      if (users.includes(userId)) {
+        // Set status to true for this job
+        jobs[i].status = 'true';
+      } else {
+        // Set status to false for this job
+        jobs[i].status = 'false';
+      }
+
+      // Add the job to the 'alljobs' array
+      alljobs.push(jobs[i]);
+    }
+
+    const totalCount = await jobPostModel.countDocuments();
+    const totalPages = Math.ceil(totalCount / limitNumber);
 
     return res.status(200).json({
       alljobs,
       totalPages,
       currentPage: pageNumber,
-    
     });
-    
-    // const userId = req.query.id
-    // const userId = '66cee275873b2d1076e6b715';
-    const userId = req.params.id
-
-    //fetching jobs
-    const jobsList = await jobPostModel.find();
-
-    // Initialize an empty array named 'alljobs' to store job-related data
-    let alljobs = [];
-
-    //set forloop for jobs collection
-    for (let i = 0; i < jobsList.length; i++) {
-      //take userId into users
-      let users = jobsList[i].appliedUsersId;
-
-      //set forloop for userd Id
-      for (let j = 0; j <= users.length; j++) {
-        //checking userId and job
-        if (userId == users[j]) {
-          //adding new field to job[i] object and set status to true
-          jobsList[i].status = 'true';
-
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-          break;
-        } else {
-          //adding new field to job[i] object and set status  to false
-          jobsList[i].status = 'false';
-          //add job to alljobs array
-          alljobs.push(jobsList[i]);
-        }
-      }
-    }
-
-
   } catch (error) {
     console.error('Error fetching job list:', error);
     res.status(500).send('Internal server error');
   }
 };
-
-
 
 //job details
 export const jobDetails = async (
@@ -209,25 +158,31 @@ export const jobSearch = async (
 ) => {
   try {
     // taking search parameters from the request body
-    const keywords = req.query.keywords as string
-    const country = req.query.country as string
-    const jobCategory = req.query.jobCategory as string
+    const keywords = req.query.keywords as string;
+    const country = req.query.country as string;
+    const jobCategory = req.query.jobCategory as string;
     //array for aggregation stages
     const pipeline = [];
 
     //object to hold the criteria for the search
-    const matchStage: MatchStage = {
-      $or: [],
-    };
+    const matchStage: MatchStage = {};
+
+    // Array to hold the $or conditions
+    const orConditions: Record<string, any>[] = [];
 
     // checking keywords
     if (keywords) {
-      matchStage.$or = [
+      orConditions.push(
         { title: { $regex: keywords, $options: 'i' } },
         { companyName: { $regex: keywords, $options: 'i' } },
         { description: { $regex: keywords, $options: 'i' } },
         { experience: { $regex: keywords, $options: 'i' } },
-      ];
+      );
+    }
+
+    // If there are any $or conditions, add them to matchStage
+    if (orConditions.length > 0) {
+      matchStage.$or = orConditions;
     }
 
     // checking country
@@ -355,7 +310,6 @@ export const jobPost = async (req: express.Request, res: express.Response) => {
       Requireds,
       address,
       logo: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${logo?.originalname}`,
-      status: false,
     });
 
     //saving new candidate

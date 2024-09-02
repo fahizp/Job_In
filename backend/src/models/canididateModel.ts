@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { string } from 'yup';
 
 //define a sub-schema for the object in the array
 const experienceSchema = new mongoose.Schema({

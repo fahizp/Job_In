@@ -8,7 +8,6 @@ import { profileInterface, UserSignUpInterface } from '../utils/typos';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import { error, log } from 'console';
 dotenv.config();
 
 // userSignUp
@@ -24,6 +23,12 @@ export const userSignUp = async (
     const err = validationResult(req);
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
+    }
+    // checking the name already exist
+    const nameExist = await authModel.findOne({ name });
+    if (nameExist) {
+      console.log('name already in use');
+      return res.status(409).json({ messaage: 'name already exist' });
     }
 
     // checking the email already exist
@@ -286,7 +291,7 @@ export const passwordReset = async (
 
   try {
     // taking token
-    let tokenExist = await userTokenModel.findOne({ token: token });
+    const tokenExist = await userTokenModel.findOne({ token: token });
     //token validation
     if (tokenExist && tokenExist.expiresAt > new Date()) {
       console.log('token is valid');
@@ -323,6 +328,6 @@ export const passwordReset = async (
     //sending response
     return res.status(200).json('Passwowrd reset successful');
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error',error });
   }
 };
