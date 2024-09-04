@@ -21,6 +21,13 @@ import {
 } from "../assets/icons/vander";
 
 export default function CandidateProfile() {
+  const [yourname, setYourname] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
   const [details, setDetails] = useState(null);
   const { id } = useParams();
 
@@ -36,7 +43,44 @@ export default function CandidateProfile() {
 
     fetchCandidateProfile();
   }, [id]);
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
+    if (!yourname || !email || !message) {
+      setError('Please fill in all required fields.');
+      setLoading(false);
+      return;
+    }
+
+    const contactdata = {
+      yourname,
+      email,
+      subject,
+      message,
+    };
+
+    try {
+      await axios.post(
+       ` http://localhost:8001/candidate/getintouch/${id}`,
+        contactdata,
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      setSuccess('Your message has been sent successfully!');
+      setYourname('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+    } catch (err) {
+      setError('An error occurred while sending your message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   if (!details) return <p>Loading...</p>;
 
   return (
@@ -83,7 +127,7 @@ export default function CandidateProfile() {
                       <h6 className="font-weight-normal">{skill.title}</h6>
                       <div className="progress">
                         <div className="progress-bar position-relative bg-primary" style={{ width: skill.range }}>
-                          <div className="progress-value d-fblock  text-dark h6">{skill.range}%</div>
+                          <div className="progress-value d-block text-dark h6">{skill.range}%</div>
                         </div>
                       </div>
                     </div>
@@ -112,40 +156,87 @@ export default function CandidateProfile() {
 
               <div className="p-4 rounded shadow mt-4">
                 <h5>Get in touch !</h5>
-                <form className="mt-4">
+                <form onSubmit={formSubmit}>
                   <div className="row">
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">Your Name <span className="text-danger">*</span></label>
-                        <input name="name" id="name" type="text" className="form-control" placeholder="Name :" />
+                        <label className="form-label fw-semibold">
+                          Your Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          name="name"
+                          id="name"
+                          type="text"
+                          className="form-control"
+                          placeholder="Name :"
+                          value={yourname}
+                          onChange={(e) => setYourname(e.target.value)}
+                        />
                       </div>
                     </div>
 
                     <div className="col-md-6">
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">Your Email <span className="text-danger">*</span></label>
-                        <input name="email" id="email" type="email" className="form-control" placeholder="Email :" />
+                        <label className="form-label fw-semibold">
+                          Your Email <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          name="email"
+                          id="email"
+                          type="email"
+                          className="form-control"
+                          placeholder="Email :"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
                       </div>
                     </div>
 
                     <div className="col-12">
                       <div className="mb-3">
                         <label className="form-label fw-semibold">Subject</label>
-                        <input name="subject" id="subject" className="form-control" placeholder="Subject :" />
+                        <input
+                          name="subject"
+                          id="subject"
+                          className="form-control"
+                          placeholder="Subject :"
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                        />
                       </div>
                     </div>
 
                     <div className="col-12">
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">Comments <span className="text-danger">*</span></label>
-                        <textarea name="comments" id="comments" rows="4" className="form-control" placeholder="Message :"></textarea>
+                        <label className="form-label fw-semibold">
+                          Comments <span className="text-danger">*</span>
+                        </label>
+                        <textarea
+                          name="comments"
+                          id="comments"
+                          rows="4"
+                          className="form-control"
+                          placeholder="Message :"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                        ></textarea>
                       </div>
                     </div>
                   </div>
+                  {error && <p className="text-danger">{error}</p>}
+                  {success && <p className="text-success">{success}</p>}
                   <div className="row">
                     <div className="col-12">
                       <div className="d-grid">
-                        <button type="submit" id="submit" name="send" className="btn btn-primary">Send Message</button>
+                        <button
+                          type="submit"
+                          id="submit"
+                          name="send"
+                          className="btn btn-primary"
+                          disabled={loading}
+                        >
+                          {loading ? 'Sending...' : 'Send Message'}
+                        </button>
                       </div>
                     </div>
                   </div>
