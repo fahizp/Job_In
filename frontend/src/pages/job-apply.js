@@ -22,7 +22,7 @@ export default function JobApply() {
   const [error, setError] = useState(''); // New state for error handling
   let { id } = useParams();
   const { userId } = useContext(UserContext);
-
+const jobId =id
   const Submit = async (e) => {
     e.preventDefault();
   
@@ -45,7 +45,8 @@ export default function JobApply() {
   
     try {
       const response = await axios.post(
-        `http://localhost:8001/job/jobapply/${id}?userId=${userId}`,
+
+        `http://localhost:8001/job/jobapply/${jobId}/${userId}`,
         data,
       );
   
@@ -82,7 +83,7 @@ export default function JobApply() {
                   alt=''
                 />
                 <h5 className='heading fw-semibold mb-0 sub-heading text-white title-dark mt-3'>
-                  Back-End Developer
+                  Back-End Developer{jobId}
                 </h5>
               </div>
             </div>
