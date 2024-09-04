@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import image1 from '../assets/images/team/01.jpg';
 import { toast, ToastContainer } from 'react-toastify';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/bootstrap.css';
 import 'react-phone-input-2/lib/bootstrap.css';
 import NavbarDark from '../components/navbarDark';
 import Footer from '../components/footer';
@@ -19,6 +21,7 @@ export default function Profile() {
   const [username, setUsername] = useState('');
   const [occupation, setOccupation] = useState('');
   const [userDetails, setUserDetails] = useState({});
+  const [phone, setPhone] = useState('');
 
   function handleChange(e) {
     setFile(e.target.files[0]);
@@ -34,6 +37,8 @@ export default function Profile() {
     const data = new FormData();
     data.append('username', username);
     data.append('occupation', occupation);
+    data.append('mobile', phone);
+
     if (file) {
       data.append('profilePhoto', file);
     }
@@ -59,19 +64,19 @@ export default function Profile() {
   useEffect(() => {
     const fetchCandidateProfile = async () => {
       if (!userId) return;
-  
-      try {
-        const response = await axios.get(`http://localhost:8001/profile/userdetail/${userId}`);
-        console.log('Fetched user details:', response.data);
-  
-        setUserDetails(response.data['user details']); 
 
-       
+      try {
+        const response = await axios.get(
+          `http://localhost:8001/profile/userdetail/${userId}`,
+        );
+        console.log('Fetched user details:', response.data);
+
+        setUserDetails(response.data['user details']);
       } catch (err) {
-        console.error("Error fetching candidate details:", err);
+        console.error('Error fetching candidate details:', err);
       }
     };
-  
+
     fetchCandidateProfile();
   }, [userId]);
   return (
@@ -82,7 +87,7 @@ export default function Profile() {
           <div className='row'>
             <div className='col-12'>
               <div className='position-relative'>
-                <div className='candidate-cover'>  
+                <div className='candidate-cover'>
                   <div className='profile-banner relative text-transparent'>
                     <input
                       id='pro-banner'
@@ -93,7 +98,9 @@ export default function Profile() {
                     <div className='relative shrink-0'>
                       <img
                         src={
-                          bannerfile ? URL.createObjectURL(bannerfile) : userDetails.banner
+                          bannerfile
+                            ? URL.createObjectURL(bannerfile)
+                            : userDetails.banner
                         }
                         className='rounded shadow'
                         id='profile-banner'
@@ -116,7 +123,11 @@ export default function Profile() {
                     />
                     <div className='position-relative d-inline-block'>
                       <img
-                        src={file ? URL.createObjectURL(file) : userDetails.profilePhoto }
+                        src={
+                          file
+                            ? URL.createObjectURL(file)
+                            : userDetails.profilePhoto
+                        }
                         className='avatar avatar-medium img-thumbnail rounded-pill shadow-sm'
                         id='profile-image'
                         alt='Profile'
@@ -134,7 +145,9 @@ export default function Profile() {
 
                   <div className='ms-m'>
                     <h5 className='mb-0'>{userDetails.name || 'User'}</h5>
-                    <p className='text-muted mb-0'>{userDetails.occupation || 'occupation'}</p>
+                    <p className='text-muted mb-0'>
+                      {userDetails.occupation || 'occupation'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -182,7 +195,16 @@ export default function Profile() {
                         />
                       </div>
                     </div>
-
+                    <h6 className="web">Number : <span>+{userDetails.mobile || 'N/A'}</span></h6>
+                    <div className='col-lg-12 mb-3'>
+                      <PhoneInput
+                        country={'eg'}
+                        className='mb-4'
+                        enableSearch={true}
+                        value={phone}
+                        onChange={(phone) => setPhone(phone)}
+                      />
+                    </div>
                     <div className='col-12'>
                       <button
                         type='submit'
@@ -198,8 +220,7 @@ export default function Profile() {
               </div>
               <div className='rounded shadow p-4 mt-4'>
                 <div className='row'>
-                <Contactinfo contactDetails={userDetails} /> 
-                <ResetPassword />
+                  <ResetPassword />
                   <Deleteaccount />
                 </div>
               </div>
