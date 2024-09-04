@@ -63,8 +63,8 @@ export default function Signup() {
             token: credentialResponse.credential,
         });
 
-        const { accessToken, userId } = response.data;
-        localStorage.setItem("accessToken", accessToken);
+        const { ACCESS_TOKEN, userId } = response.data;
+        localStorage.setItem("accessToken", ACCESS_TOKEN);
         localStorage.setItem("userId", userId);
         setUserId(userId); 
         toast.success("Login successful!");
